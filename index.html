@@ -56,6 +56,11 @@
         width: 25%;
       }
 
+      .pilgrim-content .year-nav{
+        color: #06c;
+        font-size: 0.8em !important;
+      }
+
       .pilgrim-content .pilgrim-weekdays {
         margin-bottom: 0.2em;
         color: #06c;
@@ -108,5 +113,11 @@
   <body>
 
     <input type="text"/>
+
+    <script type="text/coffeescript">
+      $ ->
+        $("input").pilgrim()
+        # $("input").pilgrim(startingView: "days")
+    </script>
   </body>
 </html>

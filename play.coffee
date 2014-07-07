@@ -233,10 +233,10 @@ class @Pilgrim.View
 
     @$content.children()
       .first()
-      .prepend @buildYearNav(years[0].year - 1, "&laquo;")
+      .prepend @buildYearNav(years[0].year - 1, "&laquo; prev")
     @$content.children()
       .last()
-      .append @buildYearNav(years[years.length-1].year + 1, "&raquo;")
+      .append @buildYearNav(years[years.length-1].year + 1, "next &raquo;")
 
 
   monthsView: (year, months)->
@@ -267,7 +267,9 @@ class @Pilgrim.View
 
 
   buildYearNav: (navYear, text)->
-    $("<div/>").addClass("year-nav").data(year: navYear).html(text)
+    $("<div/>").addClass("year-nav")
+      .data(year: navYear)
+      .html(text)
 
 
   buildYear: (yearInfo)->
@@ -378,8 +380,3 @@ $.fn.pilgrim = (options={})->
     console.log isPilgrimOpen, isPilgrimElement, isPilgrimInput, isChildOfPilgrimElement && isElementInDom
     if isPilgrimOpen && !isPilgrimElement && !isPilgrimInput && !isChildOfPilgrimElement && isElementInDom
       $(window).trigger "pilgrim:destroy"
-
-
-# Start the engines
-$("input").pilgrim()
-# $("input").pilgrim(startingView: "days")
