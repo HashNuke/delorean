@@ -29,12 +29,10 @@ class @Pilgrim
 
 
   setDefaultDateIfNecessary: ->
-    console.log @value
     if @options.startingView == "months" || @options.startingView == "days"
       @value.year ||= @currentDate.getFullYear()
     if @options.startingView == "days"
       @value.month ||= @currentDate.getMonth()
-    console.log @value
 
 
   numberOfDaysInMonth = (year, month)->
@@ -71,14 +69,15 @@ class @Pilgrim
       }
 
 
-  months: ->
+  months: (year)->
     currentMonth  = @currentDate.getMonth()
+    currentYear  = @currentDate.getFullYear()
     selectedMonth = if @value.month? then @value.month else currentMonth
     for monthLocale, index in @lang.months
       {
         month:     index
         monthName: monthLocale.short
-        current:   currentMonth == index
+        current:   currentMonth == index && currentYear == year
         selected:  selectedMonth == index
       }
 
@@ -93,6 +92,8 @@ class @Pilgrim
 
 
   days: (year, month)->
+    currentYear  = @currentDate.getFullYear()
+    currentMonth  = @currentDate.getMonth()
     currentDay = @currentDate.getDate()
     numberOfDaysInCurrentMonth  = numberOfDaysInMonth(year, month)
     numberOfDaysInPreviousMonth = numberOfDaysInMonth(year, month - 1)
@@ -101,30 +102,30 @@ class @Pilgrim
     weekdayIdOfFirstDay = new Date(year, month, 1).getDay()
     weekdayIdOfLastDay  = new Date(year, month, numberOfDaysInCurrentMonth).getDay()
     daysToDisplayForNextMonth = 6 - weekdayIdOfLastDay
+    console.log daysToDisplayForNextMonth
 
     # Because we have to start from the first Sunday to the last Saturday
     # to fill up the calendar
-    daysForView = [(1 - weekdayIdOfFirstDay)...(numberOfDaysInCurrentMonth + daysToDisplayForNextMonth)]
+    daysForView = [(1 - weekdayIdOfFirstDay)..(numberOfDaysInCurrentMonth + daysToDisplayForNextMonth)]
 
     for dayNumber in daysForView
       weekdayId = (dayNumber + weekdayIdOfFirstDay - 1) % 7
 
-      currentMonth = false
+      selectableMonth = false
       day = if dayNumber > numberOfDaysInCurrentMonth
               dayNumber - numberOfDaysInNextMonth
             else if dayNumber < 1
               numberOfDaysInPreviousMonth + dayNumber
             else if dayNumber > 0
-              currentMonth = true
-              today = true if @currentDate.getDate() == dayNumber
+              selectableMonth = true
               dayNumber
 
       {
-        day:          day
-        weekdayId:    weekdayId
-        selected:     (year == @value.year && month == @value.month && @value.day == day)
-        currentMonth: currentMonth
-        currentDay:   (currentMonth && currentDay == day)
+        day:       day
+        weekdayId: weekdayId
+        selected:  (@value.year == year && @value.month == month && @value.day == day)
+        current:   (currentYear == year && currentMonth == month && currentDay == day)
+        selectableMonth: selectableMonth
       }
 
 
@@ -132,7 +133,6 @@ class @Pilgrim
     @value.year  = year
     @value.month = month
     @value.day   = day
-    console.log "set value", @value
 
 
   padZero = (n)->
@@ -167,10 +167,9 @@ class @Pilgrim.View
     @layout()
     if startingView == "days"
       days = @pilgrim.days(@pilgrim.value.year, @pilgrim.value.month)
-      console.log days
       @daysView @pilgrim.value.year, @pilgrim.value.month, days
     else if startingView == "months"
-      @monthsView @pilgrim.value.year, @pilgrim.months()
+      @monthsView @pilgrim.value.year, @pilgrim.months(@pilgrim.value.year)
     else
       @yearsView @pilgrim.years()
 
@@ -301,8 +300,8 @@ class @Pilgrim.View
           .data({year: year, month: month, day: dayInfo.day})
           .html(dayInfo.day)
     if dayInfo.selected then $day.addClass("selected")
-    if dayInfo.currentDay then $day.addClass("current")
-    if dayInfo.currentMonth == true
+    if dayInfo.current then $day.addClass("current")
+    if dayInfo.selectableMonth == true
       $day.addClass("valid-day")
     else
       $day.addClass("invalid-day")
