@@ -22,12 +22,20 @@
         padding: 0.2em;
         width: 14em;
         float: left;
+        box-shadow: 0em 0em 0.1em 0.1em #f1f1f1;
+        font-size: 0.9em;
       }
 
       .pilgrim-header {
         text-align: center;
         padding: 0.2em;
         border-bottom: 0.1em solid #CCC;
+        font-size: 0.85em;
+        text-transform: uppercase;
+      }
+
+      .pilgrim-header span {
+        margin: 0em 0.25em;
       }
 
       .pilgrim-content {
@@ -41,6 +49,7 @@
         float: left;
         text-align: center;
         clear: both;
+        margin: 0.5em 0em;
       }
 
       .pilgrim-content .year-nav, .pilgrim-content .year, .pilgrim-content .month {
@@ -48,8 +57,9 @@
       }
 
       .pilgrim-content .pilgrim-weekdays {
-        font-weight: bold;
         margin-bottom: 0.2em;
+        color: #06c;
+        font-size: 0.9em;
       }
 
       .pilgrim-content .day, .pilgrim-content .weekday {
@@ -68,6 +78,7 @@
         text-align: center;
         margin: 0.25em 0em;
         border: 0.1em solid #FFF;
+        font-size: 0.9em;
       }
 
       .pilgrim-content .invalid-day {
@@ -77,12 +88,15 @@
       .pilgrim-content .year:hover,
       .pilgrim-content .year-nav:hover,
       .pilgrim-content .month:hover,
-      .pilgrim-content .valid-day:hover {
+      .pilgrim-content .valid-day:hover,
+      .pilgrim-header .change-month:hover,
+      .pilgrim-header .change-year:hover {
         cursor: pointer;
       }
 
       .pilgrim-content .selected {
         border: 0.1em solid #CCC;
+        color: #
       }
 
       .pilgrim-content .current {
@@ -92,6 +106,6 @@
     </style>
   </head>
   <body>
-    <input type="text" value="1999/02/01"/>
+    <input type="text" value="1999/03/01"/>
   </body>
 </html>
