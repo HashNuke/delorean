@@ -59,7 +59,6 @@ class @Pilgrim
     yearAmongRange ||=  (@value.year || currentYear)
     startingYear = yearAmongRange - (yearAmongRange % 10)
     endingYear   = startingYear + 9
-    console.log startingYear, endingYear
 
     for year in [startingYear..endingYear]
       {
@@ -121,13 +120,9 @@ class @Pilgrim
               selectableMonth = true
               dayNumber
 
-      {
-        day:       day
-        weekdayId: weekdayId
-        selected:  (@value.year == year && @value.month == month && @value.day == day)
-        current:   (currentYear == year && currentMonth == month && currentDay == day)
-        selectableMonth: selectableMonth
-      }
+      selected = @value.year == year && @value.month == month && @value.day == day && selectableMonth
+      current = currentYear == year && currentMonth == month && currentDay == day
+      {day, weekdayId, selected, current, selectableMonth}
 
 
   setValue: (year, month, day)->
@@ -386,4 +381,4 @@ $.fn.pilgrim = (options={})->
 
 
 # Start the engines
-$("input").pilgrim(startingView: "days")
+$("input").pilgrim()
