@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Pilgrim Datepicker</title>
+    <script src="jquery-2.1.1.js"></script>
+    <script src="coffee-script.js"></script>
+    <script src="play.coffee" type="text/coffeescript"></script>
+
+    <style>
+      *, *:before, *:after {
+        -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+      }
+
+      body {
+        font-family: Verdana;
+      }
+
+      .pilgrim {
+        z-index: 1;
+        position: absolute;
+        border: 0.1em solid #CCC;
+        padding: 0.2em;
+        width: 14em;
+        float: left;
+      }
+
+      .pilgrim-header {
+        text-align: center;
+        padding: 0.2em;
+        border-bottom: 0.1em solid #CCC;
+      }
+
+      .pilgrim-content {
+        float: left;
+        padding: 0.2em;
+        width: 100%;
+      }
+
+      .pilgrim-content .pilgrim-row {
+        width: 100%;
+        float: left;
+        text-align: center;
+        clear: both;
+      }
+
+      .pilgrim-content .year-nav, .pilgrim-content .year, .pilgrim-content .month {
+        width: 25%;
+      }
+
+      .pilgrim-content .pilgrim-weekdays {
+        font-weight: bold;
+        margin-bottom: 0.2em;
+      }
+
+      .pilgrim-content .day, .pilgrim-content .weekday {
+        float: left;
+        width: 14.28%;
+        text-align: center;
+      }
+
+      .pilgrim-content .year,
+      .pilgrim-content .year-nav,
+      .pilgrim-content .month,
+      .pilgrim-content .day {
+        float: left;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        text-align: center;
+        margin-top: 0.25em;
+        margin-bottom: 0.25em;
+      }
+
+      .pilgrim-content .invalid-day {
+        color: #CCC;
+      }
+
+      .pilgrim-content .year:hover,
+      .pilgrim-content .year-nav:hover,
+      .pilgrim-content .month:hover,
+      .pilgrim-content .valid-day:hover {
+        cursor: pointer;
+      }
+
+      .pilgrim-content .selected {
+        /* TODO */
+      }
+
+      .pilgrim-content .current {
+        font-weight: bold;
+        /*font-style: italic;*/
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text"/>
+  </body>
+</html>
