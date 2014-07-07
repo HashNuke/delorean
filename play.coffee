@@ -77,7 +77,7 @@ class @Pilgrim
         month:     index
         monthName: monthLocale.short
         current:   currentMonth == index && currentYear == year
-        selected:  selectedMonth == index
+        selected:  selectedMonth == index && @value.year == year
       }
 
 
