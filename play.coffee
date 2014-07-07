@@ -64,7 +64,7 @@ class @Pilgrim
       {
         year:     year
         current:  currentYear == year
-        selected: selectedYear == year
+        selected: @value.year == year
       }
 
 
@@ -382,3 +382,4 @@ $.fn.pilgrim = (options={})->
 
 # Start the engines
 $("input").pilgrim()
+# $("input").pilgrim(startingView: "days")
