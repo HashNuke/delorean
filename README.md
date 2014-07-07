@@ -6,7 +6,7 @@
 Add delorean as a bower dependency or copy over the files in the `dist` dir.
 
 ```
-$(selector).pilgrim(options)
+$(selector).datepicker(options)
 ```
 
 If the value of the input element is set, it'll be parsed.
