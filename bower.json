@@ -1,8 +1,8 @@
 {
-  "name": "pilgrim-datepicker",
+  "name": "delorean",
   "version": "0.1",
-  "homepage": "https://github.com/clutchanalytics/pilgrim-datepicker",
-  "main": ["dist/pilgrim-datepicker.js", "dist/pilgrim-datepicker.css"],
+  "homepage": "https://github.com/clutchanalytics/delorean",
+  "main": ["dist/delorean.js", "dist/delorean.css"],
   "authors": [
     "Akash Manohar J <akash@akash.im>"
   ],
