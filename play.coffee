@@ -102,18 +102,19 @@ class @Pilgrim
     weekdayIdOfFirstDay = new Date(year, month, 1).getDay()
     weekdayIdOfLastDay  = new Date(year, month, numberOfDaysInCurrentMonth).getDay()
     daysToDisplayForNextMonth = 6 - weekdayIdOfLastDay
-    console.log daysToDisplayForNextMonth
 
     # Because we have to start from the first Sunday to the last Saturday
     # to fill up the calendar
-    daysForView = [(1 - weekdayIdOfFirstDay)..(numberOfDaysInCurrentMonth + daysToDisplayForNextMonth)]
+    dayRangeStart = 1 - weekdayIdOfFirstDay
+    dayRangeEnd   = numberOfDaysInCurrentMonth + daysToDisplayForNextMonth
+    daysForView = [dayRangeStart..dayRangeEnd]
 
     for dayNumber in daysForView
       weekdayId = (dayNumber + weekdayIdOfFirstDay - 1) % 7
 
       selectableMonth = false
       day = if dayNumber > numberOfDaysInCurrentMonth
-              dayNumber - numberOfDaysInNextMonth
+              dayNumber - numberOfDaysInCurrentMonth
             else if dayNumber < 1
               numberOfDaysInPreviousMonth + dayNumber
             else if dayNumber > 0
