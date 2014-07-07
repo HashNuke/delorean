@@ -20,10 +20,16 @@ class @Pilgrim
   value: {}
 
   constructor: (@$input, @options={})->
+    console.log @$input.attr("value")
     @setDefaultsIfNecessary()
+    @parseInitialValue()
     @lang = @getLocale(@options["locale"])
     @currentDate = new Date()
     @view = new Pilgrim.View(@)
+
+
+  numberOfDaysInMonth = (year, month)->
+    new Date(year, month + 1, 0).getDate()
 
 
   destroy: ->
@@ -35,12 +41,13 @@ class @Pilgrim
 
   setDefaultsIfNecessary: ->
     @options["locale"] ||= "en"
-    @options["format"] ||= "%y/%-m/%-d"
+    @options["format"] ||= "yyyymmdd"
+    @options["separator"] ||= "/"
 
 
-  years: (yearOptions={})->
+  years: ->
     currentYear  = @currentDate.getFullYear()
-    selectedYear = if yearOptions.selectedYear? then yearOptions.selectedYear else currentYear
+    selectedYear = if @value.year? then @value.year else currentYear
     startingYear = selectedYear - (selectedYear % 10) + 1
     endingYear   = startingYear + 9
 
@@ -52,9 +59,9 @@ class @Pilgrim
       }
 
 
-  months: (monthOptions={})->
+  months: ->
     currentMonth  = @currentDate.getMonth()
-    selectedMonth = if monthOptions.selectedMonth? then monthOptions.selectedMonth else currentMonth
+    selectedMonth = if @value.month? then @value.month else currentMonth
     for monthLocale, index in @lang.months
       {
         month:     index
@@ -75,9 +82,9 @@ class @Pilgrim
 
   days: (year, month)->
     currentDay = @currentDate.getDate()
-    numberOfDaysInCurrentMonth  = @numberOfDaysInMonth(year, month)
-    numberOfDaysInPreviousMonth = @numberOfDaysInMonth(year, month - 1)
-    numberOfDaysInNextMonth     = @numberOfDaysInMonth(year, month + 1)
+    numberOfDaysInCurrentMonth  = numberOfDaysInMonth(year, month)
+    numberOfDaysInPreviousMonth = numberOfDaysInMonth(year, month - 1)
+    numberOfDaysInNextMonth     = numberOfDaysInMonth(year, month + 1)
 
     weekdayIdOfFirstDay = new Date(year, month, 1).getDay()
     weekdayIdOfLastDay  = new Date(year, month, numberOfDaysInCurrentMonth).getDay()
@@ -103,6 +110,7 @@ class @Pilgrim
       {
         day:          day
         weekdayId:    weekdayId
+        selected:     (year == @value.year && month == @value.month && @value.day == day)
         currentMonth: currentMonth
         currentDay:   (currentMonth && currentDay == day)
       }
@@ -112,36 +120,28 @@ class @Pilgrim
     @value.year  = year
     @value.month = month
     @value.day   = day
-    formatter = new Pilgrim.Formatter(@options.format, @value)
-    @$input.val formatter.format()
-    $(document).trigger "pilgrim:destroy"
 
-
-  numberOfDaysInMonth: (year, month)->
-    new Date(year, month + 1, 0).getDate()
-
-
-
-class @Pilgrim.Formatter
-  constructor: (@formatString, @dateParts)->
-
-  format: ->
-    outputValue = @formatString
-    for formatString in ["%y", "%Y", "%m", "%-m", "%d", "%-d"]
-      outputValue = @substituteFormatter(formatString, outputValue)
-    outputValue
 
   padZero = (n)->
     if n < 10 then "0#{n}" else "#{n}"
 
-  substituteFormatter: (formatString, inputString)->
-    switch formatString
-      when "%y"  then inputString.replace formatString, @dateParts.year
-      when "%Y"  then inputString.replace formatString, "#{@dateParts.year}".substring(2,4)
-      when "%m"  then inputString.replace formatString, @dateParts.month+1
-      when "%-m" then inputString.replace formatString, padZero(@dateParts.month+1)
-      when "%d"  then inputString.replace formatString, @dateParts.day
-      when "%-d" then inputString.replace formatString, padZero(@dateParts.day)
+
+  format: ->
+    switch @options.format
+      when "yyyymmdd" then [@value.year, padZero(@value.month+1), padZero(@value.day)].join(@options.separator)
+      when "ddmmyyyy" then [padZero(@value.day), padZero(@value.month+1), @value.year].join(@options.separator)
+      else new Pilgrim.Error("Invalid format string")
+
+
+  parseInitialValue: ->
+    return if !@options.initialValue? || @options.initialValue.trim().length == 0
+    dateParts = @options.initialValue.split(@options.separator)
+    switch @options.format
+      when "yyyymmdd"
+        @setValue parseInt(dateParts[0], 10), parseInt(dateParts[1], 10), parseInt(dateParts[2], 10)
+      when "ddmmyyyy"
+        @setValue parseInt(dateParts[2], 10), parseInt(dateParts[1], 10), parseInt(dateParts[0], 10)
+      else new Pilgrim.Error("Initial value is of unknown format")
 
 
 class @Pilgrim.Error
@@ -184,6 +184,8 @@ class @Pilgrim.View
       month = $(event.target).data("month")
       day = $(event.target).data("day")
       @pilgrim.setValue year, month, day
+      @pilgrim.$input.val @pilgrim.format()
+      $(document).trigger "pilgrim:destroy"
 
     @$root.on "click", ".change-month", (event)=>
       year  = $(event.target).data("year")
@@ -242,7 +244,9 @@ class @Pilgrim.View
             .addClass("year")
             .data({year: yearInfo.year})
             .html(yearInfo.year)
-    if yearInfo.current then $year.addClass("current") else $year
+    if yearInfo.current then $year.addClass("current")
+    if yearInfo.selected then $year.addClass("selected")
+    $year
 
 
   buildMonth: (year, monthInfo)->
@@ -250,7 +254,9 @@ class @Pilgrim.View
             .addClass("month")
             .data({year: year, month: monthInfo.month})
             .html(monthInfo.monthName)
-    if monthInfo.current then $month.addClass("current") else $month
+    if monthInfo.current then $month.addClass("current")
+    if monthInfo.selected then $month.addClass("selected")
+    $month
 
 
   buildDay: (year, month, dayInfo)->
@@ -258,6 +264,7 @@ class @Pilgrim.View
           .addClass("day")
           .data({year: year, month: month, day: dayInfo.day})
           .html(dayInfo.day)
+    if dayInfo.selected then $day.addClass("selected")
     if dayInfo.currentDay then $day.addClass("current")
     if dayInfo.currentMonth == true
       $day.addClass("valid-day")
@@ -301,9 +308,15 @@ class @Pilgrim.Locale
 $.fn.pilgrim = (options={})->
 
   @on "focusin", (event)->
-    # Decide which options to use: from attributes or from function args?
-    pilgrim = $("body").data("pilgrim") || new Pilgrim($(this))
-    $(this).data("pilgrim-input", true)
+    $ele = $(this)
+    pilgrimOptions =
+      initialValue: $ele.prop("value") || options.initialValue
+      format: options.format
+      locale: options.locale
+      separator: options.separator
+
+    pilgrim = $("body").data("pilgrim") || new Pilgrim($ele, pilgrimOptions)
+    $ele.data("pilgrim-input", true)
     $("body").addClass("pilgrim-open").data("pilgrim", pilgrim)
 
 
