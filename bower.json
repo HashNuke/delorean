@@ -1,0 +1,25 @@
+{
+  "name": "pilgrim-datepicker",
+  "version": "0.1",
+  "homepage": "https://github.com/clutchanalytics/pilgrim-datepicker",
+  "main": ["dist/pilgrim-datepicker.js", "dist/pilgrim-datepicker.css"],
+  "authors": [
+    "Akash Manohar J <akash@akash.im>"
+  ],
+  "description": "datepicker to the rescue",
+  "keywords": [
+    "datepicker",
+    "jquery"
+  ],
+  "dependencies": {
+    "jquery": ">=2.0.0"
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
