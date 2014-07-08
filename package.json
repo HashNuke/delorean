@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/clutchanalytics/delorean/issues"
   },
-  "homepage": "https://github.com/clutchanalytics/delorean"
+  "homepage": "https://github.com/clutchanalytics/delorean",
+
+  "dependencies": {
+    "coffee-script": "*",
+    "bower": "*"
+  }
 }
