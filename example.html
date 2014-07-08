@@ -12,16 +12,25 @@
       }
 
       body { font-family: Verdana; }
+
+      /*NOTE uncomment this to test repositioning*/
+      /*input {
+        margin-top: 50em;
+        margin-bottom: 5em;
+      }*/
     </style>
   </head>
   <body>
 
-    <input type="text"/>
+    <div align="center">
+      <input type="text"/>
+    </div>
 
     <script type="text/javascript">
       $(document).ready(function(){
         $("input").datepicker()
-        // $("input").pilgrim(startingView: "days")
+        // $("input").datepicker({startingView: "months"})
+        // $("input").datepicker({startingView: "days"})
       })
     </script>
   </body>
