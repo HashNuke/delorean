@@ -4,26 +4,26 @@ $.fn.datepicker = (options={})->
     $ele = $(this)
     options.initialValue = $ele.val() if $ele.val().trim().length != 0
 
-    pilgrim = $("body").data("pilgrim") || new Pilgrim($ele, options)
-    $ele.data("pilgrim-input", true)
-    $("body").addClass("pilgrim-open").data("pilgrim", pilgrim)
+    datepicker = $("body").data("datepicker") || new Datepicker($ele, options)
+    $ele.data("datepicker-input", true)
+    $("body").addClass("datepicker-open").data("datepicker", datepicker)
 
 
   $(window).on "datepicker:destroy", ->
-    pilgrim = $("body").data("pilgrim")
-    pilgrim.destroy()
-    $("body").removeData("pilgrim").removeClass("pilgrim-open")
+    datepicker = $("body").data("datepicker")
+    datepicker.destroy()
+    $("body").removeData("datepicker").removeClass("datepicker-open")
 
 
   $(window).on "click", (event)->
     $target = $(event.target)
 
-    isPilgrimOpen = $("body").hasClass("pilgrim-open")
-    isPilgrimElement = $target.hasClass("pilgrim")
-    isPilgrimInput = $target.data("pilgrim-input")
-    isChildOfPilgrimElement = $target.closest(".pilgrim").length > 0
+    isDatepickerOpen = $("body").hasClass("datepicker-open")
+    isDatepickerElement = $target.hasClass("datepicker")
+    isDatepickerInput = $target.data("datepicker-input")
+    isChildOfDatepickerElement = $target.closest(".datepicker").length > 0
     isElementInDom = $target.closest("body").length > 0
 
-    console.log isPilgrimOpen, isPilgrimElement, isPilgrimInput, isChildOfPilgrimElement && isElementInDom
-    if isPilgrimOpen && !isPilgrimElement && !isPilgrimInput && !isChildOfPilgrimElement && isElementInDom
+    console.log isDatepickerOpen, isDatepickerElement, isDatepickerInput, isChildOfDatepickerElement && isElementInDom
+    if isDatepickerOpen && !isDatepickerElement && !isDatepickerInput && !isChildOfDatepickerElement && isElementInDom
       $(window).trigger "datepicker:destroy"

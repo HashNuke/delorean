@@ -1,3 +1,3 @@
-class @Pilgrim.Error
-  name: "Pilgrim.Error"
+class @Datepicker.Error
+  name: "Datepicker.Error"
   constructor: (@message)->

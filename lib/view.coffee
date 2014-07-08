@@ -1,13 +1,13 @@
-class @Pilgrim.View
-  constructor: (@pilgrim, startingView)->
+class @Datepicker.View
+  constructor: (@datepicker, startingView)->
     @layout()
     if startingView == "days"
-      days = @pilgrim.days(@pilgrim.value.year, @pilgrim.value.month)
-      @daysView @pilgrim.value.year, @pilgrim.value.month, days
+      days = @datepicker.days(@datepicker.value.year, @datepicker.value.month)
+      @daysView @datepicker.value.year, @datepicker.value.month, days
     else if startingView == "months"
-      @monthsView @pilgrim.value.year, @pilgrim.months(@pilgrim.value.year)
+      @monthsView @datepicker.value.year, @datepicker.months(@datepicker.value.year)
     else
-      @yearsView @pilgrim.years()
+      @yearsView @datepicker.years()
 
 
   destroy: ->
@@ -15,9 +15,9 @@ class @Pilgrim.View
 
 
   layout: ->
-    @$root    = $("<div/>").addClass("pilgrim")
-    @$header  = $("<div/>").addClass("pilgrim-header")
-    @$content = $("<div/>").addClass("pilgrim-content")
+    @$root    = $("<div/>").addClass("datepicker")
+    @$header  = $("<div/>").addClass("datepicker-header")
+    @$content = $("<div/>").addClass("datepicker-content")
     @$root.append(@$header).append(@$content)
     #TODO actually position below @$input
     $("body").append @$root
@@ -27,32 +27,32 @@ class @Pilgrim.View
   bindEvents: ->
     @$root.on "click", ".year", (event)=>
       year = $(event.target).data("year")
-      @monthsView year, @pilgrim.months(year)
+      @monthsView year, @datepicker.months(year)
 
     @$root.on "click", ".year-nav", (event)=>
       year = $(event.target).data("year")
-      @yearsView @pilgrim.years(year)
+      @yearsView @datepicker.years(year)
 
     @$root.on "click", ".month", (event)=>
       year  = $(event.target).data("year")
       month = $(event.target).data("month")
-      @daysView year, month, @pilgrim.days(year, month)
+      @daysView year, month, @datepicker.days(year, month)
 
     @$root.on "click", ".valid-day", (event)=>
       year  = $(event.target).data("year")
       month = $(event.target).data("month")
       day = $(event.target).data("day")
-      @pilgrim.setValue year, month, day
-      @pilgrim.$input.val @pilgrim.format()
-      $(document).trigger "pilgrim:destroy"
+      @datepicker.setValue year, month, day
+      @datepicker.$input.val @datepicker.format()
+      $(document).trigger "datepicker:destroy"
 
     @$root.on "click", ".change-month", (event)=>
       year  = $(event.target).data("year")
-      @monthsView year, @pilgrim.months(year)
+      @monthsView year, @datepicker.months(year)
 
     @$root.on "click", ".change-year", (event)=>
       year  = $(event.target).data("year")
-      @yearsView @pilgrim.years(year)
+      @yearsView @datepicker.years(year)
 
 
   yearsView: (years)->
@@ -68,7 +68,7 @@ class @Pilgrim.View
 
     for yearInfo, index in years
       if [0, 3, 7].indexOf(index) != -1
-        @$content.append $("<div/>").addClass("pilgrim-row")
+        @$content.append $("<div/>").addClass("datepicker-row")
       @$content.children().last().append @buildYear(yearInfo)
 
     @$content.children()
@@ -86,7 +86,7 @@ class @Pilgrim.View
 
     for monthInfo, index in months
       if index % 4 == 0
-        @$content.append $("<div/>").addClass("pilgrim-row")
+        @$content.append $("<div/>").addClass("datepicker-row")
       @$content.children().last().append @buildMonth(year, monthInfo)
 
 
@@ -96,9 +96,9 @@ class @Pilgrim.View
     @$header.append @monthHeaderNav(year, month)
     @$header.append @yearHeaderNav(year)
 
-    @$content.append $("<div/>").addClass("pilgrim-row").addClass("pilgrim-weekdays")
+    @$content.append $("<div/>").addClass("datepicker-row").addClass("datepicker-weekdays")
     for dayInfo in days[0..6]
-      weekdayName = @pilgrim.shortWeekdayName(dayInfo.weekdayId)
+      weekdayName = @datepicker.shortWeekdayName(dayInfo.weekdayId)
       $weekday = $("<div/>").addClass("weekday").html weekdayName
       @$content.children().last().append $weekday
 
@@ -155,4 +155,4 @@ class @Pilgrim.View
   monthHeaderNav: (year, month)->
     $("<span/>").addClass("change-month")
       .data(year: year)
-      .text(@pilgrim.lang.months[month].long)
+      .text(@datepicker.lang.months[month].long)

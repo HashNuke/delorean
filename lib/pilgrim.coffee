@@ -1,4 +1,4 @@
-class @Pilgrim
+class @Datepicker
 
   value: {}
 
@@ -8,7 +8,7 @@ class @Pilgrim
     @parseInitialValue()
     @setDefaultDateIfNecessary()
     @lang = @getLocale(@options["locale"])
-    @view = new Pilgrim.View(@, @options.startingView)
+    @view = new Datepicker.View(@, @options.startingView)
 
 
   setDefaultDateIfNecessary: ->
@@ -69,8 +69,8 @@ class @Pilgrim
 
 
   getLocale: (languageCode)->
-    return Pilgrim.Locale[languageCode] if Pilgrim.Locale[languageCode]?
-    throw new Pilgrim.Error("Locale not available")
+    return Datepicker.Locale[languageCode] if Datepicker.Locale[languageCode]?
+    throw new Datepicker.Error("Locale not available")
 
 
   days: (year, month)->
@@ -122,7 +122,7 @@ class @Pilgrim
     switch @options.format
       when "yyyymmdd" then [@value.year, padZero(@value.month+1), padZero(@value.day)].join(@options.separator)
       when "ddmmyyyy" then [padZero(@value.day), padZero(@value.month+1), @value.year].join(@options.separator)
-      else new Pilgrim.Error("Invalid format string")
+      else new Datepicker.Error("Invalid format string")
 
 
   parseInitialValue: ->
@@ -133,4 +133,4 @@ class @Pilgrim
         @setValue parseInt(dateParts[0], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[2], 10)
       when "ddmmyyyy"
         @setValue parseInt(dateParts[2], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[0], 10)
-      else new Pilgrim.Error("Initial value is of unknown format")
+      else new Datepicker.Error("Initial value is of unknown format")
