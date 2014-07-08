@@ -1,0 +1,20 @@
+{
+  "name": "delorean",
+  "version": "0.0.1",
+  "description": "datepicker",
+  "main": "dist/datepicker.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clutchanalytics/delorean.git"
+  },
+  "keywords": [
+    "jquery",
+    "datepicker"
+  ],
+  "author": "Akash Manohar <akash@akash.im>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/clutchanalytics/delorean/issues"
+  },
+  "homepage": "https://github.com/clutchanalytics/delorean"
+}
