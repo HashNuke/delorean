@@ -23,6 +23,6 @@ If the value of the input element is set, it'll be parsed.
 
 The CSS file is in `dist/delorean.css`. The coffeescript source files are in `lib/`
 
-* Install CoffeeScript with `npm install -g coffee-script` or any other method you prefer
+* Install dependencies with `npm install` or install `coffee-script` and `bower` from npm yourself.
 * To compile once run `make`
-* To watch for changes during development run `make watch`
+* To watch for changes and compile during development run `make watch`
