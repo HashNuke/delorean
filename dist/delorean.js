@@ -152,6 +152,8 @@
           return [this.value.year, padZero(this.value.month + 1), padZero(this.value.day)].join(this.options.separator);
         case "ddmmyyyy":
           return [padZero(this.value.day), padZero(this.value.month + 1), this.value.year].join(this.options.separator);
+        case "mmddyyyy":
+          return [padZero(this.value.month + 1), padZero(this.value.day), this.value.year].join(this.options.separator);
         default:
           return new Datepicker.Error("Invalid format string");
       }
@@ -168,6 +170,8 @@
           return this.setValue(parseInt(dateParts[0], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[2], 10));
         case "ddmmyyyy":
           return this.setValue(parseInt(dateParts[2], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[0], 10));
+        case "mmddyyyy":
+          return this.setValue(parseInt(dateParts[2], 10), parseInt(dateParts[0], 10) - 1, parseInt(dateParts[1], 10));
         default:
           return new Datepicker.Error("Initial value is of unknown format");
       }

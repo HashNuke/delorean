@@ -122,6 +122,7 @@ class @Datepicker
     switch @options.format
       when "yyyymmdd" then [@value.year, padZero(@value.month+1), padZero(@value.day)].join(@options.separator)
       when "ddmmyyyy" then [padZero(@value.day), padZero(@value.month+1), @value.year].join(@options.separator)
+      when "mmddyyyy" then [padZero(@value.month+1), padZero(@value.day), @value.year].join(@options.separator)
       else new Datepicker.Error("Invalid format string")
 
 
@@ -133,4 +134,6 @@ class @Datepicker
         @setValue parseInt(dateParts[0], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[2], 10)
       when "ddmmyyyy"
         @setValue parseInt(dateParts[2], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[0], 10)
+      when "mmddyyyy"
+        @setValue parseInt(dateParts[2], 10), parseInt(dateParts[0], 10) - 1, parseInt(dateParts[1], 10)
       else new Datepicker.Error("Initial value is of unknown format")
