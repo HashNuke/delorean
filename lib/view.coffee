@@ -14,14 +14,28 @@ class @Datepicker.View
     @$root.remove()
 
 
+  reposition: ->
+    visibleScreenHeight = $("body").height() - $(window).scrollTop()
+    visibleTopOffset    = visibleScreenHeight - @datepicker.$input.offset().top
+    visibleBottomOffset = $(window).height() - @datepicker.$input.offset().top - @datepicker.$input.outerHeight()
+
+    offsetLeft = @datepicker.$input.offset().left
+    if visibleTopOffset > visibleBottomOffset
+      offsetTop = @datepicker.$input.offset().top - @$root.outerHeight()
+    else
+      offsetTop = @datepicker.$input.offset().top + @datepicker.$input.outerHeight()
+
+    @$root.css(top: offsetTop, left: offsetLeft)
+
+
   layout: ->
     @$root    = $("<div/>").addClass("datepicker")
     @$header  = $("<div/>").addClass("datepicker-header")
     @$content = $("<div/>").addClass("datepicker-content")
-    @$root.append(@$header).append(@$content)
-    #TODO actually position below @$input
-    $("body").append @$root
     @bindEvents()
+
+    @$root.append(@$header).append(@$content)
+    $("body").append @$root
 
 
   bindEvents: ->
@@ -38,14 +52,6 @@ class @Datepicker.View
       month = $(event.target).data("month")
       @daysView year, month, @datepicker.days(year, month)
 
-    @$root.on "click", ".valid-day", (event)=>
-      year  = $(event.target).data("year")
-      month = $(event.target).data("month")
-      day = $(event.target).data("day")
-      @datepicker.setValue year, month, day
-      @datepicker.$input.val @datepicker.format()
-      $(document).trigger "datepicker:destroy"
-
     @$root.on "click", ".change-month", (event)=>
       year  = $(event.target).data("year")
       @monthsView year, @datepicker.months(year)
@@ -53,6 +59,14 @@ class @Datepicker.View
     @$root.on "click", ".change-year", (event)=>
       year  = $(event.target).data("year")
       @yearsView @datepicker.years(year)
+
+    @$root.on "click", ".valid-day", (event)=>
+      year  = $(event.target).data("year")
+      month = $(event.target).data("month")
+      day = $(event.target).data("day")
+      @datepicker.setValue year, month, day
+      @datepicker.$input.val @datepicker.format()
+      $(document).trigger "datepicker:destroy"
 
 
   yearsView: (years)->
@@ -67,7 +81,7 @@ class @Datepicker.View
 
 
     for yearInfo, index in years
-      if [0, 3, 7].indexOf(index) != -1
+      if [0, 2, 5, 8].indexOf(index) != -1
         @$content.append $("<div/>").addClass("datepicker-row")
       @$content.children().last().append @buildYear(yearInfo)
 
@@ -77,6 +91,7 @@ class @Datepicker.View
     @$content.children()
       .last()
       .append @buildYearNav(years[years.length-1].year + 1, "next &raquo;")
+    @reposition()
 
 
   monthsView: (year, months)->
@@ -85,9 +100,10 @@ class @Datepicker.View
     @$header.append @yearHeaderNav(year)
 
     for monthInfo, index in months
-      if index % 4 == 0
+      if index % 3 == 0
         @$content.append $("<div/>").addClass("datepicker-row")
       @$content.children().last().append @buildMonth(year, monthInfo)
+    @reposition()
 
 
   daysView: (year, month, days)->
@@ -104,6 +120,7 @@ class @Datepicker.View
 
     for dayInfo in days
       @$content.append @buildDay(year, month, dayInfo)
+    @reposition()
 
 
   buildYearNav: (navYear, text)->
@@ -117,7 +134,7 @@ class @Datepicker.View
             .addClass("year")
             .data({year: yearInfo.year})
             .html(yearInfo.year)
-    if yearInfo.current then $year.addClass("current")
+    if yearInfo.current && @datepicker.options.highlightToday then $year.addClass("current")
     if yearInfo.selected then $year.addClass("selected")
     $year
 
@@ -127,7 +144,7 @@ class @Datepicker.View
             .addClass("month")
             .data({year: year, month: monthInfo.month})
             .html(monthInfo.monthName)
-    if monthInfo.current then $month.addClass("current")
+    if monthInfo.current && @datepicker.options.highlightToday then $month.addClass("current")
     if monthInfo.selected then $month.addClass("selected")
     $month
 
@@ -138,7 +155,7 @@ class @Datepicker.View
           .data({year: year, month: month, day: dayInfo.day})
           .html(dayInfo.day)
     if dayInfo.selected then $day.addClass("selected")
-    if dayInfo.current then $day.addClass("current")
+    if dayInfo.current && @datepicker.options.highlightToday then $day.addClass("current")
     if dayInfo.selectableMonth == true
       $day.addClass("valid-day")
     else

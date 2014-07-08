@@ -38,11 +38,12 @@
     };
 
     Datepicker.prototype.setDefaultOptions = function() {
-      var _base, _base1, _base2, _base3;
+      var _base, _base1, _base2, _base3, _base4;
       (_base = this.options)["locale"] || (_base["locale"] = "en");
       (_base1 = this.options)["format"] || (_base1["format"] = "yyyymmdd");
       (_base2 = this.options)["separator"] || (_base2["separator"] = "/");
-      return (_base3 = this.options)["startingView"] || (_base3["startingView"] = "years");
+      (_base3 = this.options)["startingView"] || (_base3["startingView"] = "years");
+      return (_base4 = this.options)["highlightToday"] || (_base4["highlightToday"] = false);
     };
 
     Datepicker.prototype.years = function(yearAmongRange) {
@@ -277,13 +278,30 @@
       return this.$root.remove();
     };
 
+    View.prototype.reposition = function() {
+      var offsetLeft, offsetTop, visibleBottomOffset, visibleScreenHeight, visibleTopOffset;
+      visibleScreenHeight = $("body").height() - $(window).scrollTop();
+      visibleTopOffset = visibleScreenHeight - this.datepicker.$input.offset().top;
+      visibleBottomOffset = $(window).height() - this.datepicker.$input.offset().top - this.datepicker.$input.outerHeight();
+      offsetLeft = this.datepicker.$input.offset().left;
+      if (visibleTopOffset > visibleBottomOffset) {
+        offsetTop = this.datepicker.$input.offset().top - this.$root.outerHeight();
+      } else {
+        offsetTop = this.datepicker.$input.offset().top + this.datepicker.$input.outerHeight();
+      }
+      return this.$root.css({
+        top: offsetTop,
+        left: offsetLeft
+      });
+    };
+
     View.prototype.layout = function() {
       this.$root = $("<div/>").addClass("datepicker");
       this.$header = $("<div/>").addClass("datepicker-header");
       this.$content = $("<div/>").addClass("datepicker-content");
+      this.bindEvents();
       this.$root.append(this.$header).append(this.$content);
-      $("body").append(this.$root);
-      return this.bindEvents();
+      return $("body").append(this.$root);
     };
 
     View.prototype.bindEvents = function() {
@@ -309,7 +327,21 @@
           return _this.daysView(year, month, _this.datepicker.days(year, month));
         };
       })(this));
-      this.$root.on("click", ".valid-day", (function(_this) {
+      this.$root.on("click", ".change-month", (function(_this) {
+        return function(event) {
+          var year;
+          year = $(event.target).data("year");
+          return _this.monthsView(year, _this.datepicker.months(year));
+        };
+      })(this));
+      this.$root.on("click", ".change-year", (function(_this) {
+        return function(event) {
+          var year;
+          year = $(event.target).data("year");
+          return _this.yearsView(_this.datepicker.years(year));
+        };
+      })(this));
+      return this.$root.on("click", ".valid-day", (function(_this) {
         return function(event) {
           var day, month, year;
           year = $(event.target).data("year");
@@ -318,20 +350,6 @@
           _this.datepicker.setValue(year, month, day);
           _this.datepicker.$input.val(_this.datepicker.format());
           return $(document).trigger("datepicker:destroy");
-        };
-      })(this));
-      this.$root.on("click", ".change-month", (function(_this) {
-        return function(event) {
-          var year;
-          year = $(event.target).data("year");
-          return _this.monthsView(year, _this.datepicker.months(year));
-        };
-      })(this));
-      return this.$root.on("click", ".change-year", (function(_this) {
-        return function(event) {
-          var year;
-          year = $(event.target).data("year");
-          return _this.yearsView(_this.datepicker.years(year));
         };
       })(this));
     };
@@ -348,33 +366,33 @@
       }
       for (index = _i = 0, _len = years.length; _i < _len; index = ++_i) {
         yearInfo = years[index];
-        if ([0, 3, 7].indexOf(index) !== -1) {
+        if ([0, 2, 5, 8].indexOf(index) !== -1) {
           this.$content.append($("<div/>").addClass("datepicker-row"));
         }
         this.$content.children().last().append(this.buildYear(yearInfo));
       }
       this.$content.children().first().prepend(this.buildYearNav(years[0].year - 1, "&laquo; prev"));
-      return this.$content.children().last().append(this.buildYearNav(years[years.length - 1].year + 1, "next &raquo;"));
+      this.$content.children().last().append(this.buildYearNav(years[years.length - 1].year + 1, "next &raquo;"));
+      return this.reposition();
     };
 
     View.prototype.monthsView = function(year, months) {
-      var index, monthInfo, _i, _len, _results;
+      var index, monthInfo, _i, _len;
       this.$content.empty();
       this.$header.empty();
       this.$header.append(this.yearHeaderNav(year));
-      _results = [];
       for (index = _i = 0, _len = months.length; _i < _len; index = ++_i) {
         monthInfo = months[index];
-        if (index % 4 === 0) {
+        if (index % 3 === 0) {
           this.$content.append($("<div/>").addClass("datepicker-row"));
         }
-        _results.push(this.$content.children().last().append(this.buildMonth(year, monthInfo)));
+        this.$content.children().last().append(this.buildMonth(year, monthInfo));
       }
-      return _results;
+      return this.reposition();
     };
 
     View.prototype.daysView = function(year, month, days) {
-      var $weekday, dayInfo, weekdayName, _i, _j, _len, _len1, _ref, _results;
+      var $weekday, dayInfo, weekdayName, _i, _j, _len, _len1, _ref;
       this.$content.empty();
       this.$header.empty();
       this.$header.append(this.monthHeaderNav(year, month));
@@ -387,12 +405,11 @@
         $weekday = $("<div/>").addClass("weekday").html(weekdayName);
         this.$content.children().last().append($weekday);
       }
-      _results = [];
       for (_j = 0, _len1 = days.length; _j < _len1; _j++) {
         dayInfo = days[_j];
-        _results.push(this.$content.append(this.buildDay(year, month, dayInfo)));
+        this.$content.append(this.buildDay(year, month, dayInfo));
       }
-      return _results;
+      return this.reposition();
     };
 
     View.prototype.buildYearNav = function(navYear, text) {
@@ -406,7 +423,7 @@
       $year = $("<div/>").addClass("year").data({
         year: yearInfo.year
       }).html(yearInfo.year);
-      if (yearInfo.current) {
+      if (yearInfo.current && this.datepicker.options.highlightToday) {
         $year.addClass("current");
       }
       if (yearInfo.selected) {
@@ -421,7 +438,7 @@
         year: year,
         month: monthInfo.month
       }).html(monthInfo.monthName);
-      if (monthInfo.current) {
+      if (monthInfo.current && this.datepicker.options.highlightToday) {
         $month.addClass("current");
       }
       if (monthInfo.selected) {
@@ -440,7 +457,7 @@
       if (dayInfo.selected) {
         $day.addClass("selected");
       }
-      if (dayInfo.current) {
+      if (dayInfo.current && this.datepicker.options.highlightToday) {
         $day.addClass("current");
       }
       if (dayInfo.selectableMonth === true) {

@@ -34,6 +34,7 @@ class @Datepicker
     @options["format"] ||= "yyyymmdd"
     @options["separator"] ||= "/"
     @options["startingView"] ||= "years"
+    @options["highlightToday"] ||= false
 
 
   years: (yearAmongRange)->

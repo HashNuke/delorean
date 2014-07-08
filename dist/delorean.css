@@ -35,8 +35,10 @@
   margin: 0.5em 0em;
 }
 
-.datepicker-content .year-nav, .datepicker-content .year, .datepicker-content .month {
-  width: 25%;
+.datepicker-content .year-nav,
+.datepicker-content .year,
+.datepicker-content .month {
+  width: 33.33%;
 }
 
 .datepicker-content .year-nav{
@@ -56,16 +58,26 @@
   text-align: center;
 }
 
+.datepicker-content .month {
+  font-size: 1.05em;
+  padding: 0.3em 0em;
+}
+
 .datepicker-content .year,
 .datepicker-content .year-nav,
 .datepicker-content .month,
 .datepicker-content .day {
   float: left;
-  padding: 0.25em;
   text-align: center;
-  margin: 0.25em 0em;
   border: 0.1em solid #FFF;
+}
+
+.datepicker-content .year,
+.datepicker-content .year-nav,
+.datepicker-content .day {
   font-size: 0.9em;
+  padding: 0.25em;
+  margin: 0.25em 0em;
 }
 
 .datepicker-content .invalid-day {
