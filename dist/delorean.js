@@ -418,7 +418,7 @@
     View.prototype.buildYearNav = function(navYear, text) {
       return $("<div/>").addClass("year-nav").data({
         year: navYear
-      }).append($("<span/>").html(text));
+      }).html(text);
     };
 
     View.prototype.buildYear = function(yearInfo) {

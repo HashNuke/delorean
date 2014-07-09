@@ -47,13 +47,6 @@
   font-size: 0.8em !important;
 }
 
-.datepicker-content .year-nav span{
-  background: #EEE;
-  border-radius: 0.5em;
-  border: 0.1em solid #EEE;
-  padding: 0.3em 0.5em;
-}
-
 .datepicker-content .datepicker-weekdays {
   margin-bottom: 0.2em;
   color: #06c;

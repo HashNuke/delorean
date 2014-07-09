@@ -130,7 +130,7 @@ class @Datepicker.View
   buildYearNav: (navYear, text)->
     $("<div/>").addClass("year-nav")
       .data(year: navYear)
-      .append $("<span/>").html(text)
+      .html(text)
 
 
   buildYear: (yearInfo)->
