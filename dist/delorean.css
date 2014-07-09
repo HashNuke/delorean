@@ -103,7 +103,10 @@
 .datepicker-content .selected {
   color: #fff;
   background: #ff0066;
+}
 
+.datepicker-content .selected:hover {
+  color: #fff;
 }
 
 .datepicker-content .current {
