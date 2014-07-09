@@ -279,10 +279,13 @@
     };
 
     View.prototype.reposition = function() {
-      var offsetLeft, offsetTop, visibleBottomOffset, visibleScreenHeight, visibleTopOffset;
-      visibleScreenHeight = $("body").height() - $(window).scrollTop();
-      visibleTopOffset = visibleScreenHeight - this.datepicker.$input.offset().top;
-      visibleBottomOffset = $(window).height() - this.datepicker.$input.offset().top - this.datepicker.$input.outerHeight();
+      var offsetLeft, offsetTop, visibleBottomOffset, visibleTopOffset;
+      visibleTopOffset = this.datepicker.$input.offset().top - $(window).scrollTop();
+      visibleBottomOffset = $(window).height() - (visibleTopOffset + this.datepicker.$input.outerHeight());
+      if (visibleBottomOffset < 0) {
+        visibleBottomOffset *= -1;
+      }
+      console.log("offsets", visibleTopOffset, visibleBottomOffset);
       offsetLeft = this.datepicker.$input.offset().left;
       if (visibleTopOffset > visibleBottomOffset) {
         offsetTop = this.datepicker.$input.offset().top - this.$root.outerHeight();
