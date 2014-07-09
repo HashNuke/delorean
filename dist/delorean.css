@@ -101,6 +101,12 @@
   cursor: pointer;
 }
 
+.datepicker-content .year:hover,
+.datepicker-content .month:hover,
+.datepicker-content .valid-day:hover {
+  color: #ff0066;
+}
+
 .datepicker-content .selected {
   color: #fff;
   background: #ff0066;
