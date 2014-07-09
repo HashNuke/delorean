@@ -15,9 +15,12 @@ class @Datepicker.View
 
 
   reposition: ->
-    visibleScreenHeight = $(document).height() - $(window).scrollTop()
-    visibleTopOffset    = visibleScreenHeight - @datepicker.$input.offset().top
-    visibleBottomOffset = $(window).height() - @datepicker.$input.offset().top - @datepicker.$input.outerHeight()
+    visibleScreenHeight = $(window).height()
+    visibleTopOffset    = @datepicker.$input.offset().top - $(window).scrollTop()
+    visibleBottomOffset = visibleScreenHeight - (visibleTopOffset + @datepicker.$input.outerHeight())
+
+    if visibleBottomOffset < 0
+      visibleBottomOffset *= -1
 
     offsetLeft = @datepicker.$input.offset().left
     if visibleTopOffset > visibleBottomOffset
