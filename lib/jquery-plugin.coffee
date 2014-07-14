@@ -4,26 +4,27 @@ $.fn.datepicker = (options={})->
     $ele = $(this)
     options.initialValue = $ele.val() if $ele.val().trim().length != 0
 
-    datepicker = $("body").data("datepicker") || new Datepicker($ele, options)
-    $ele.data("datepicker-input", true)
-    $("body").addClass("datepicker-open").data("datepicker", datepicker)
+    datepicker = $ele.data("datepicker") || new Datepicker($ele, options)
+    $ele.addClass("datepicker-input").data("datepicker", datepicker)
 
 
   $(window).on "datepicker:destroy", ->
-    datepicker = $("body").data("datepicker")
+    $datepicker = $(".datepicker-input")
+    return if $datepicker.length == 0
+    datepicker = $datepicker.data("datepicker")
     datepicker.destroy()
-    $("body").removeData("datepicker").removeClass("datepicker-open")
+    $datepicker.removeData("datepicker").removeClass("datepicker-input")
 
 
   $(window).on "click", (event)->
     $target = $(event.target)
 
-    isDatepickerOpen = $("body").hasClass("datepicker-open")
+    isDatepickerOpen = $(".datepicker-input").length != 0
     isDatepickerElement = $target.hasClass("datepicker")
-    isDatepickerInput = $target.data("datepicker-input")
+    isDatepickerInput = $target.hasClass("datepicker-input")
     isChildOfDatepickerElement = $target.closest(".datepicker").length > 0
     isElementInDom = $target.closest("body").length > 0
 
-    console.log isDatepickerOpen, isDatepickerElement, isDatepickerInput, isChildOfDatepickerElement && isElementInDom
+    console.log isDatepickerOpen, isDatepickerElement, isChildOfDatepickerElement && isElementInDom
     if isDatepickerOpen && !isDatepickerElement && !isDatepickerInput && !isChildOfDatepickerElement && isElementInDom
       $(window).trigger "datepicker:destroy"

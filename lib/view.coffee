@@ -70,7 +70,7 @@ class @Datepicker.View
       day = $(event.target).data("day")
       @datepicker.setValue year, month, day
       @datepicker.$input.val @datepicker.format()
-      $(document).trigger "datepicker:destroy"
+      $(window).trigger "datepicker:destroy"
 
 
   yearsView: (years)->

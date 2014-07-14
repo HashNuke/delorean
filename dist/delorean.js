@@ -352,7 +352,7 @@
           day = $(event.target).data("day");
           _this.datepicker.setValue(year, month, day);
           _this.datepicker.$input.val(_this.datepicker.format());
-          return $(document).trigger("datepicker:destroy");
+          return $(window).trigger("datepicker:destroy");
         };
       })(this));
     };
@@ -497,25 +497,28 @@
       if ($ele.val().trim().length !== 0) {
         options.initialValue = $ele.val();
       }
-      datepicker = $("body").data("datepicker") || new Datepicker($ele, options);
-      $ele.data("datepicker-input", true);
-      return $("body").addClass("datepicker-open").data("datepicker", datepicker);
+      datepicker = $ele.data("datepicker") || new Datepicker($ele, options);
+      return $ele.addClass("datepicker-input").data("datepicker", datepicker);
     });
     $(window).on("datepicker:destroy", function() {
-      var datepicker;
-      datepicker = $("body").data("datepicker");
+      var $datepicker, datepicker;
+      $datepicker = $(".datepicker-input");
+      if ($datepicker.length === 0) {
+        return;
+      }
+      datepicker = $datepicker.data("datepicker");
       datepicker.destroy();
-      return $("body").removeData("datepicker").removeClass("datepicker-open");
+      return $datepicker.removeData("datepicker").removeClass("datepicker-input");
     });
     return $(window).on("click", function(event) {
       var $target, isChildOfDatepickerElement, isDatepickerElement, isDatepickerInput, isDatepickerOpen, isElementInDom;
       $target = $(event.target);
-      isDatepickerOpen = $("body").hasClass("datepicker-open");
+      isDatepickerOpen = $(".datepicker-input").length !== 0;
       isDatepickerElement = $target.hasClass("datepicker");
-      isDatepickerInput = $target.data("datepicker-input");
+      isDatepickerInput = $target.hasClass("datepicker-input");
       isChildOfDatepickerElement = $target.closest(".datepicker").length > 0;
       isElementInDom = $target.closest("body").length > 0;
-      console.log(isDatepickerOpen, isDatepickerElement, isDatepickerInput, isChildOfDatepickerElement && isElementInDom);
+      console.log(isDatepickerOpen, isDatepickerElement, isChildOfDatepickerElement && isElementInDom);
       if (isDatepickerOpen && !isDatepickerElement && !isDatepickerInput && !isChildOfDatepickerElement && isElementInDom) {
         return $(window).trigger("datepicker:destroy");
       }
