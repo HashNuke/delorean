@@ -21,8 +21,6 @@ class @Datepicker.View
     if visibleBottomOffset < 0
       visibleBottomOffset *= -1
 
-    console.log "offsets", visibleTopOffset, visibleBottomOffset
-
     offsetLeft = @datepicker.$input.offset().left
     if visibleTopOffset > visibleBottomOffset
       offsetTop = @datepicker.$input.offset().top - @$root.outerHeight()

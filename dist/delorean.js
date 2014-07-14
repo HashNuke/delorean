@@ -285,7 +285,6 @@
       if (visibleBottomOffset < 0) {
         visibleBottomOffset *= -1;
       }
-      console.log("offsets", visibleTopOffset, visibleBottomOffset);
       offsetLeft = this.datepicker.$input.offset().left;
       if (visibleTopOffset > visibleBottomOffset) {
         offsetTop = this.datepicker.$input.offset().top - this.$root.outerHeight();
@@ -518,7 +517,6 @@
       isDatepickerInput = $target.hasClass("datepicker-input");
       isChildOfDatepickerElement = $target.closest(".datepicker").length > 0;
       isElementInDom = $target.closest("body").length > 0;
-      console.log(isDatepickerOpen, isDatepickerElement, isChildOfDatepickerElement && isElementInDom);
       if (isDatepickerOpen && !isDatepickerElement && !isDatepickerInput && !isChildOfDatepickerElement && isElementInDom) {
         return $(window).trigger("datepicker:destroy");
       }

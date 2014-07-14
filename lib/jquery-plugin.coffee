@@ -25,6 +25,5 @@ $.fn.datepicker = (options={})->
     isChildOfDatepickerElement = $target.closest(".datepicker").length > 0
     isElementInDom = $target.closest("body").length > 0
 
-    console.log isDatepickerOpen, isDatepickerElement, isChildOfDatepickerElement && isElementInDom
     if isDatepickerOpen && !isDatepickerElement && !isDatepickerInput && !isChildOfDatepickerElement && isElementInDom
       $(window).trigger "datepicker:destroy"
