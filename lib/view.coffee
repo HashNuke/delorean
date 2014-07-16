@@ -64,9 +64,11 @@ class @Datepicker.View
     @$root.on "click", ".valid-day", (event)=>
       year  = $(event.target).data("year")
       month = $(event.target).data("month")
-      day = $(event.target).data("day")
+      day   = $(event.target).data("day")
       @datepicker.setValue year, month, day
       @datepicker.$input.val @datepicker.format()
+      selectedDate = new Date(year, month, day, 0, 0, 0)
+      @datepicker.$input.trigger "datepicker:selected", [selectedDate]
       $(window).trigger "datepicker:destroy"
 
 
