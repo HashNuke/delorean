@@ -10,8 +10,7 @@ class @Datepicker.View
       @yearsView @datepicker.years()
 
 
-  destroy: ->
-    @$root.remove()
+  destroy: -> @$root.remove()
 
 
   reposition: ->
@@ -41,26 +40,26 @@ class @Datepicker.View
 
 
   bindEvents: ->
-    @$root.on "click", ".year", (event)=>
+    @$root.on "click", ".valid-year", (event)=>
       year = $(event.target).data("year")
-      @monthsView year, @datepicker.months(year)
-
-    @$root.on "click", ".year-nav", (event)=>
-      year = $(event.target).data("year")
-      @yearsView @datepicker.years(year)
-
-    @$root.on "click", ".month", (event)=>
-      year  = $(event.target).data("year")
-      month = $(event.target).data("month")
-      @daysView year, month, @datepicker.days(year, month)
-
-    @$root.on "click", ".change-month", (event)=>
-      year  = $(event.target).data("year")
       @monthsView year, @datepicker.months(year)
 
     @$root.on "click", ".change-year", (event)=>
       year  = $(event.target).data("year")
       @yearsView @datepicker.years(year)
+
+    @$root.on "click", ".year-nav", (event)=>
+      year = $(event.target).data("year")
+      @yearsView @datepicker.years(year)
+
+    @$root.on "click", ".change-month", (event)=>
+      year  = $(event.target).data("year")
+      @monthsView year, @datepicker.months(year)
+
+    @$root.on "click", ".valid-month", (event)=>
+      year  = $(event.target).data("year")
+      month = $(event.target).data("month")
+      @daysView year, month, @datepicker.days(year, month)
 
     @$root.on "click", ".valid-day", (event)=>
       year  = $(event.target).data("year")

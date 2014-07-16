@@ -23,7 +23,6 @@
       if (this.options.endDate != null) {
         this.endDate = this.parseRange(this.options.endDate);
       }
-      console.log("start/end", this.startDate, this.endDate);
       this._setDefaultDateIfNecessary();
       this.lang = this.getLocale(this.options["locale"]);
       this.view = new Datepicker.View(this, this.options.startingView);
@@ -156,36 +155,36 @@
     };
 
     Datepicker.prototype.isDisabledYear = function(year) {
-      if ((this.startDate != null) && this.startDate.year < year) {
+      if ((this.startDate != null) && year < this.startDate.year) {
         return true;
       }
-      if ((this.endDate != null) && this.endDate.year > year) {
+      if ((this.endDate != null) && year > this.endDate.year) {
         return true;
       }
       return false;
     };
 
     Datepicker.prototype.isDisabledMonth = function(year, month) {
-      if (!this.isDisabledYear(year)) {
-        return false;
-      }
-      if ((this.startDate != null) && this.startDate.month < month) {
+      if (this.isDisabledYear(year)) {
         return true;
       }
-      if ((this.endDate != null) && this.endDate.month > month) {
+      if ((this.startDate != null) && this.isDisabledYear(year - 1) && month < this.startDate.month) {
+        return true;
+      }
+      if ((this.endDate != null) && this.isDisabledYear(year + 1) && month > this.endDate.month) {
         return true;
       }
       return false;
     };
 
     Datepicker.prototype.isDisabledDay = function(year, month, day) {
-      if (!this.isDisabledMonth(year, month)) {
-        return false;
-      }
-      if ((this.startDate != null) && this.startDate.day < day) {
+      if (this.isDisabledMonth(year, month)) {
         return true;
       }
-      if ((this.endDate != null) && this.endDate.day > day) {
+      if ((this.startDate != null) && this.isDisabledMonth(year, month - 1) && day < this.startDate.day) {
+        return true;
+      }
+      if ((this.endDate != null) && this.isDisabledMonth(year, month + 1) && day > this.endDate.day) {
         return true;
       }
       return false;
@@ -437,29 +436,7 @@
     };
 
     View.prototype.bindEvents = function() {
-      this.$root.on("click", ".year", (function(_this) {
-        return function(event) {
-          var year;
-          year = $(event.target).data("year");
-          return _this.monthsView(year, _this.datepicker.months(year));
-        };
-      })(this));
-      this.$root.on("click", ".year-nav", (function(_this) {
-        return function(event) {
-          var year;
-          year = $(event.target).data("year");
-          return _this.yearsView(_this.datepicker.years(year));
-        };
-      })(this));
-      this.$root.on("click", ".month", (function(_this) {
-        return function(event) {
-          var month, year;
-          year = $(event.target).data("year");
-          month = $(event.target).data("month");
-          return _this.daysView(year, month, _this.datepicker.days(year, month));
-        };
-      })(this));
-      this.$root.on("click", ".change-month", (function(_this) {
+      this.$root.on("click", ".valid-year", (function(_this) {
         return function(event) {
           var year;
           year = $(event.target).data("year");
@@ -471,6 +448,28 @@
           var year;
           year = $(event.target).data("year");
           return _this.yearsView(_this.datepicker.years(year));
+        };
+      })(this));
+      this.$root.on("click", ".year-nav", (function(_this) {
+        return function(event) {
+          var year;
+          year = $(event.target).data("year");
+          return _this.yearsView(_this.datepicker.years(year));
+        };
+      })(this));
+      this.$root.on("click", ".change-month", (function(_this) {
+        return function(event) {
+          var year;
+          year = $(event.target).data("year");
+          return _this.monthsView(year, _this.datepicker.months(year));
+        };
+      })(this));
+      this.$root.on("click", ".valid-month", (function(_this) {
+        return function(event) {
+          var month, year;
+          year = $(event.target).data("year");
+          month = $(event.target).data("month");
+          return _this.daysView(year, month, _this.datepicker.days(year, month));
         };
       })(this));
       return this.$root.on("click", ".valid-day", (function(_this) {

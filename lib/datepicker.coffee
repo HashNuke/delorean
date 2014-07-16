@@ -17,13 +17,14 @@ class @Datepicker
     if @options.endDate?
       @endDate = @parseRange(@options.endDate)
 
-    console.log "start/end", @startDate, @endDate
-
     @_setDefaultDateIfNecessary()
     @lang = @getLocale(@options["locale"])
     @view = new Datepicker.View(@, @options.startingView)
 
 
+  # Borrowed and modified from bootstrap-datepicker
+  # https://github.com/eternicode/bootstrap-datepicker/blob/9e48783a799/js/bootstrap-datepicker.js#L1466
+  # Thanks to @eternicode
   parseRange: (range)->
     return unless @regex.dateRange.test(range)
     parts = range.match(@regex.dateRangeParts)
@@ -45,6 +46,9 @@ class @Datepicker
     {year: date.getUTCFullYear(), month: date.getUTCMonth(), day: date.getUTCDate()}
 
 
+  # Borrowed and modified from bootstrap-datepicker
+  # https://github.com/eternicode/bootstrap-datepicker/blob/9e48783a799/js/bootstrap-datepicker.js#L1055
+  # Thanks to @eternicode
   _moveMonth: (date, moveBy)->
     newDate   = new Date(date.valueOf())
     day       = newDate.getUTCDate()
@@ -138,27 +142,31 @@ class @Datepicker
 
 
   isDisabledYear: (year)->
-    return true if @startDate? && @startDate.year < year
-    return true if @endDate? && @endDate.year > year
+    return true if @startDate? && year < @startDate.year
+    return true if @endDate? && year > @endDate.year
     false
 
 
   isDisabledMonth: (year, month)->
-    return false unless @isDisabledYear(year)
-    return true if @startDate? && @startDate.month < month
-    return true if @endDate? && @endDate.month > month
+    return true if @isDisabledYear(year)
+    if @startDate? && @isDisabledYear(year - 1) && month < @startDate.month
+      return true
+    if @endDate?   && @isDisabledYear(year + 1) && month > @endDate.month
+      return true
     false
 
 
   isDisabledDay: (year, month, day)->
-    return false unless @isDisabledMonth(year, month)
-    return true if @startDate? && @startDate.day < day
-    return true if @endDate? && @endDate.day > day
+    return true if @isDisabledMonth(year, month)
+    if @startDate? && @isDisabledMonth(year, month - 1) && day < @startDate.day
+      return true
+    if @endDate?   && @isDisabledMonth(year, month + 1) && day > @endDate.day
+      return true
     false
 
 
   months: (year)->
-    currentMonth  = @currentDate.getMonth()
+    currentMonth = @currentDate.getMonth()
     currentYear  = @currentDate.getFullYear()
     selectedMonth = if @value.month? then @value.month else currentMonth
     for monthLocale, index in @lang.months
