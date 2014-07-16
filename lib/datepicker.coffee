@@ -1,17 +1,95 @@
 class @Datepicker
 
+  regex:
+    dateRange: /^[\-+]\d+[dmwy]([\s,]+[\-+]\d+[dmwy])*$/
+    dateRangePartMatch:  /([\-+]\d+)([dmwy])/
+    dateRangeParts: /([\-+]\d+)([dmwy])/g
+
   value: {}
 
   constructor: (@$input, @options={})->
     @currentDate = new Date()
-    @setDefaultOptions()
-    @parseInitialValue()
-    @setDefaultDateIfNecessary()
+    @_setDefaultOptions()
+    @_parseInitialValue()
+    if @options.startDate?
+      @startDate = @parseRange(@options.startDate)
+
+    if @options.endDate?
+      @endDate = @parseRange(@options.endDate)
+
+    console.log "start/end", @startDate, @endDate
+
+    @_setDefaultDateIfNecessary()
     @lang = @getLocale(@options["locale"])
     @view = new Datepicker.View(@, @options.startingView)
 
 
-  setDefaultDateIfNecessary: ->
+  parseRange: (range)->
+    return unless @regex.dateRange.test(range)
+    parts = range.match(@regex.dateRangeParts)
+    date  = new Date()
+
+    for part in parts
+      debugger
+      [_matched_value, moveBy, moveRange] = @regex.dateRangePartMatch.exec part
+      moveBy  = parseInt moveBy, 10
+      switch moveRange
+        when 'd'
+          date.setUTCDate(date.getUTCDate() + moveBy)
+        when 'w'
+          date.setUTCDate(date.getUTCDate() + moveBy * 7)
+        when 'm'
+          date = @_moveMonth(date, moveBy)
+        when 'y'
+          date = @_moveMonth(date, moveBy * 12)
+
+    {year: date.getUTCFullYear(), month: date.getUTCMonth(), day: date.getUTCDate()}
+
+
+  _moveMonth: (date, moveBy)->
+    newDate   = new Date(date.valueOf())
+    day       = newDate.getUTCDate()
+    month     = newDate.getUTCMonth()
+    magnitude = Math.abs(moveBy)
+
+    moveBy = if moveBy > 0 then 1 else -1
+
+    if magnitude == 1
+      if moveBy == -1
+        # If going back one month, make sure month is not current month
+        # (eg, Mar 31 -> Feb 31 == Feb 28, not Mar 02)
+        testFunction = -> newDate.getUTCMonth() == month
+      else
+        # If going forward one month, make sure month is as expected
+        # (eg, Jan 31 -> Feb 31 == Feb 28, not Mar 02)
+        testFunction = -> newDate.getUTCMonth() != newMonth
+
+      newMonth = month + moveBy
+      newDate.setUTCMonth(newMonth)
+
+      # Dec -> Jan (12) or Jan -> Dec (-1) -- limit expected date to 0-11
+      if newMonth < 0 || newMonth > 11
+        newMonth = (newMonth + 12) % 12
+    else
+      # For magnitudes >1, move one month at a time...
+      for i in [0...magnitude]
+        # ...which might decrease the day (eg, Jan 31 to Feb 28, etc)...
+        newDate = @_moveMonth(newDate, moveBy)
+
+      # ...then reset the day, keeping it in the new month
+      newMonth = new_date.getUTCMonth()
+      newDate.setUTCDate(day)
+      testFunction = -> newDate.getUTCMonth() != newMonth
+
+    # Common date-resetting loop -- if date is beyond end of month, make it
+    # end of month
+    while testFunction()
+      newDate.setUTCDate(--day)
+      newDate.setUTCMonth(newMonth)
+    newDate
+
+
+  _setDefaultDateIfNecessary: ->
     if @options.startingView == "months" || @options.startingView == "days"
       @value.year ||= @currentDate.getFullYear()
     if @options.startingView == "days"
@@ -29,7 +107,7 @@ class @Datepicker
     delete @view
 
 
-  setDefaultOptions: ->
+  _setDefaultOptions: ->
     @options["locale"] ||= "en"
     @options["format"] ||= "yyyymmdd"
     @options["separator"] ||= "/"
@@ -38,11 +116,27 @@ class @Datepicker
 
 
   years: (yearAmongRange)->
+    if @startDate? && yearAmongRange < @startDate.year
+      throw new Datepicker.Error("Year is less than range")
+
+    if @endDate? && yearAmongRange < @endDate.year
+      throw new Datepicker.Error("Year is greater than range")
+
+
     currentYear  = @currentDate.getFullYear()
     selectedYear = if @value.year? then @value.year else currentYear
     yearAmongRange ||=  (@value.year || currentYear)
     startingYear = yearAmongRange - (yearAmongRange % 10)
+
     endingYear   = startingYear + 9
+
+    if @startDate? && startingYear <= @startDate.year
+      startYear = @startDate.year
+      #TODO Disable further year movement
+
+    if @endDate? && endingYear >= @endDate.year
+      endingYear = @endDate.year
+      #TODO Disable further year movement
 
     for year in [startingYear..endingYear]
       {
@@ -115,19 +209,19 @@ class @Datepicker
     @value.day   = day
 
 
-  padZero = (n)->
+  _padZero: (n)->
     if n < 10 then "0#{n}" else "#{n}"
 
 
   format: ->
     switch @options.format
-      when "yyyymmdd" then [@value.year, padZero(@value.month+1), padZero(@value.day)].join(@options.separator)
-      when "ddmmyyyy" then [padZero(@value.day), padZero(@value.month+1), @value.year].join(@options.separator)
-      when "mmddyyyy" then [padZero(@value.month+1), padZero(@value.day), @value.year].join(@options.separator)
+      when "yyyymmdd" then [@value.year, @_padZero(@value.month+1), @_padZero(@value.day)].join(@options.separator)
+      when "ddmmyyyy" then [@_padZero(@value.day), @_padZero(@value.month+1), @value.year].join(@options.separator)
+      when "mmddyyyy" then [@_padZero(@value.month+1), @_padZero(@value.day), @value.year].join(@options.separator)
       else new Datepicker.Error("Invalid format string")
 
 
-  parseInitialValue: ->
+  _parseInitialValue: ->
     return if !@options.initialValue? || @options.initialValue.trim().length == 0
     dateParts = @options.initialValue.split(@options.separator)
     switch @options.format
