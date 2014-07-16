@@ -30,7 +30,6 @@ class @Datepicker
     date  = new Date()
 
     for part in parts
-      debugger
       [_matched_value, moveBy, moveRange] = @regex.dateRangePartMatch.exec part
       moveBy  = parseInt moveBy, 10
       switch moveRange
@@ -77,7 +76,7 @@ class @Datepicker
         newDate = @_moveMonth(newDate, moveBy)
 
       # ...then reset the day, keeping it in the new month
-      newMonth = new_date.getUTCMonth()
+      newMonth = newDate.getUTCMonth()
       newDate.setUTCDate(day)
       testFunction = -> newDate.getUTCMonth() != newMonth
 
@@ -119,31 +118,43 @@ class @Datepicker
     if @startDate? && yearAmongRange < @startDate.year
       throw new Datepicker.Error("Year is less than range")
 
-    if @endDate? && yearAmongRange < @endDate.year
+    if @endDate? && yearAmongRange > @endDate.year
       throw new Datepicker.Error("Year is greater than range")
-
 
     currentYear  = @currentDate.getFullYear()
     selectedYear = if @value.year? then @value.year else currentYear
     yearAmongRange ||=  (@value.year || currentYear)
     startingYear = yearAmongRange - (yearAmongRange % 10)
-
     endingYear   = startingYear + 9
 
-    if @startDate? && startingYear <= @startDate.year
-      startYear = @startDate.year
-      #TODO Disable further year movement
-
-    if @endDate? && endingYear >= @endDate.year
-      endingYear = @endDate.year
-      #TODO Disable further year movement
 
     for year in [startingYear..endingYear]
       {
         year:     year
         current:  currentYear == year
         selected: @value.year == year
+        disabled: @isDisabledYear(year)
       }
+
+
+  isDisabledYear: (year)->
+    return true if @startDate? && @startDate.year < year
+    return true if @endDate? && @endDate.year > year
+    false
+
+
+  isDisabledMonth: (year, month)->
+    return false unless @isDisabledYear(year)
+    return true if @startDate? && @startDate.month < month
+    return true if @endDate? && @endDate.month > month
+    false
+
+
+  isDisabledDay: (year, month, day)->
+    return false unless @isDisabledMonth(year, month)
+    return true if @startDate? && @startDate.day < day
+    return true if @endDate? && @endDate.day > day
+    false
 
 
   months: (year)->
@@ -156,6 +167,7 @@ class @Datepicker
         monthName: monthLocale.short
         current:   currentMonth == index && currentYear == year
         selected:  selectedMonth == index && @value.year == year
+        disabled:  @isDisabledMonth(year, index)
       }
 
 
@@ -199,8 +211,9 @@ class @Datepicker
               dayNumber
 
       selected = @value.year == year && @value.month == month && @value.day == day && selectableMonth
-      current = currentYear == year && currentMonth == month && currentDay == day
-      {day, weekdayId, selected, current, selectableMonth}
+      current  = currentYear == year && currentMonth == month && currentDay == day
+      disabled = @isDisabledDay(year, month, day)
+      {day, weekdayId, selected, current, selectableMonth, disabled}
 
 
   setValue: (year, month, day)->

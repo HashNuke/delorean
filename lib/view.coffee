@@ -87,12 +87,16 @@ class @Datepicker.View
         @$content.append $("<div/>").addClass("datepicker-row")
       @$content.children().last().append @buildYear(yearInfo)
 
-    @$content.children()
-      .first()
-      .prepend @buildYearNav(years[0].year - 1, "&laquo; prev")
-    @$content.children()
-      .last()
-      .append @buildYearNav(years[years.length-1].year + 1, "next &raquo;")
+
+    unless years[0].disabled
+      @$content.children()
+        .first()
+        .prepend @buildYearNav(years[0].year - 1, "&laquo; prev")
+
+    unless years[years.length - 1].disabled
+      @$content.children()
+        .last()
+        .append @buildYearNav(years[years.length-1].year + 1, "next &raquo;")
     @reposition()
 
 
@@ -138,7 +142,10 @@ class @Datepicker.View
             .html(yearInfo.year)
     if yearInfo.current && @datepicker.options.highlightToday then $year.addClass("current")
     if yearInfo.selected then $year.addClass("selected")
-    $year
+    if !yearInfo.disabled
+      $year.addClass("valid-year")
+    else
+      $year.addClass("invalid-year")
 
 
   buildMonth: (year, monthInfo)->
@@ -148,7 +155,10 @@ class @Datepicker.View
             .html(monthInfo.monthName)
     if monthInfo.current && @datepicker.options.highlightToday then $month.addClass("current")
     if monthInfo.selected then $month.addClass("selected")
-    $month
+    if !monthInfo.disabled
+      $month.addClass("valid-month")
+    else
+      $month.addClass("invalid-month")
 
 
   buildDay: (year, month, dayInfo)->
@@ -158,11 +168,10 @@ class @Datepicker.View
           .html(dayInfo.day)
     if dayInfo.selected then $day.addClass("selected")
     if dayInfo.current && @datepicker.options.highlightToday then $day.addClass("current")
-    if dayInfo.selectableMonth == true
+    if dayInfo.selectableMonth && !dayInfo.disabled
       $day.addClass("valid-day")
     else
       $day.addClass("invalid-day")
-    $day
 
 
   yearHeaderNav: (year)->

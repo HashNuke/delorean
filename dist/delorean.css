@@ -81,21 +81,23 @@
   margin: 0.25em 0em;
 }
 
+.datepicker-content .invalid-year,
+.datepicker-content .invalid-month,
 .datepicker-content .invalid-day {
   color: #CCC;
 }
 
-.datepicker-content .year:hover,
+.datepicker-content .valid-year:hover,
 .datepicker-content .year-nav:hover,
-.datepicker-content .month:hover,
+.datepicker-content .valid-month:hover,
 .datepicker-content .valid-day:hover,
 .datepicker-header .change-month:hover,
 .datepicker-header .change-year:hover {
   cursor: pointer;
 }
 
-.datepicker-content .year:hover,
-.datepicker-content .month:hover,
+.datepicker-content .valid-year:hover,
+.datepicker-content .valid-month:hover,
 .datepicker-content .valid-day:hover {
   color: #ff0066;
 }

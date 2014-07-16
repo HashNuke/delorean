@@ -38,7 +38,6 @@
       date = new Date();
       for (_i = 0, _len = parts.length; _i < _len; _i++) {
         part = parts[_i];
-        debugger;
         _ref = this.regex.dateRangePartMatch.exec(part), _matched_value = _ref[0], moveBy = _ref[1], moveRange = _ref[2];
         moveBy = parseInt(moveBy, 10);
         switch (moveRange) {
@@ -88,7 +87,7 @@
         for (i = _i = 0; 0 <= magnitude ? _i < magnitude : _i > magnitude; i = 0 <= magnitude ? ++_i : --_i) {
           newDate = this._moveMonth(newDate, moveBy);
         }
-        newMonth = new_date.getUTCMonth();
+        newMonth = newDate.getUTCMonth();
         newDate.setUTCDate(day);
         testFunction = function() {
           return newDate.getUTCMonth() !== newMonth;
@@ -132,11 +131,11 @@
     };
 
     Datepicker.prototype.years = function(yearAmongRange) {
-      var currentYear, endingYear, selectedYear, startYear, startingYear, year, _i, _results;
+      var currentYear, endingYear, selectedYear, startingYear, year, _i, _results;
       if ((this.startDate != null) && yearAmongRange < this.startDate.year) {
         throw new Datepicker.Error("Year is less than range");
       }
-      if ((this.endDate != null) && yearAmongRange < this.endDate.year) {
+      if ((this.endDate != null) && yearAmongRange > this.endDate.year) {
         throw new Datepicker.Error("Year is greater than range");
       }
       currentYear = this.currentDate.getFullYear();
@@ -144,21 +143,52 @@
       yearAmongRange || (yearAmongRange = this.value.year || currentYear);
       startingYear = yearAmongRange - (yearAmongRange % 10);
       endingYear = startingYear + 9;
-      if ((this.startDate != null) && startingYear <= this.startDate.year) {
-        startYear = this.startDate.year;
-      }
-      if ((this.endDate != null) && endingYear >= this.endDate.year) {
-        endingYear = this.endDate.year;
-      }
       _results = [];
       for (year = _i = startingYear; startingYear <= endingYear ? _i <= endingYear : _i >= endingYear; year = startingYear <= endingYear ? ++_i : --_i) {
         _results.push({
           year: year,
           current: currentYear === year,
-          selected: this.value.year === year
+          selected: this.value.year === year,
+          disabled: this.isDisabledYear(year)
         });
       }
       return _results;
+    };
+
+    Datepicker.prototype.isDisabledYear = function(year) {
+      if ((this.startDate != null) && this.startDate.year < year) {
+        return true;
+      }
+      if ((this.endDate != null) && this.endDate.year > year) {
+        return true;
+      }
+      return false;
+    };
+
+    Datepicker.prototype.isDisabledMonth = function(year, month) {
+      if (!this.isDisabledYear(year)) {
+        return false;
+      }
+      if ((this.startDate != null) && this.startDate.month < month) {
+        return true;
+      }
+      if ((this.endDate != null) && this.endDate.month > month) {
+        return true;
+      }
+      return false;
+    };
+
+    Datepicker.prototype.isDisabledDay = function(year, month, day) {
+      if (!this.isDisabledMonth(year, month)) {
+        return false;
+      }
+      if ((this.startDate != null) && this.startDate.day < day) {
+        return true;
+      }
+      if ((this.endDate != null) && this.endDate.day > day) {
+        return true;
+      }
+      return false;
     };
 
     Datepicker.prototype.months = function(year) {
@@ -174,7 +204,8 @@
           month: index,
           monthName: monthLocale.short,
           current: currentMonth === index && currentYear === year,
-          selected: selectedMonth === index && this.value.year === year
+          selected: selectedMonth === index && this.value.year === year,
+          disabled: this.isDisabledMonth(year, index)
         });
       }
       return _results;
@@ -194,7 +225,7 @@
     };
 
     Datepicker.prototype.days = function(year, month) {
-      var current, currentDay, currentMonth, currentYear, day, dayNumber, dayRangeEnd, dayRangeStart, daysForView, daysToDisplayForNextMonth, numberOfDaysInCurrentMonth, numberOfDaysInNextMonth, numberOfDaysInPreviousMonth, selectableMonth, selected, weekdayId, weekdayIdOfFirstDay, weekdayIdOfLastDay, _i, _j, _len, _results, _results1;
+      var current, currentDay, currentMonth, currentYear, day, dayNumber, dayRangeEnd, dayRangeStart, daysForView, daysToDisplayForNextMonth, disabled, numberOfDaysInCurrentMonth, numberOfDaysInNextMonth, numberOfDaysInPreviousMonth, selectableMonth, selected, weekdayId, weekdayIdOfFirstDay, weekdayIdOfLastDay, _i, _j, _len, _results, _results1;
       currentYear = this.currentDate.getFullYear();
       currentMonth = this.currentDate.getMonth();
       currentDay = this.currentDate.getDate();
@@ -219,12 +250,14 @@
         day = dayNumber > numberOfDaysInCurrentMonth ? dayNumber - numberOfDaysInCurrentMonth : dayNumber < 1 ? numberOfDaysInPreviousMonth + dayNumber : dayNumber > 0 ? (selectableMonth = true, dayNumber) : void 0;
         selected = this.value.year === year && this.value.month === month && this.value.day === day && selectableMonth;
         current = currentYear === year && currentMonth === month && currentDay === day;
+        disabled = this.isDisabledDay(year, month, day);
         _results1.push({
           day: day,
           weekdayId: weekdayId,
           selected: selected,
           current: current,
-          selectableMonth: selectableMonth
+          selectableMonth: selectableMonth,
+          disabled: disabled
         });
       }
       return _results1;
@@ -470,8 +503,12 @@
         }
         this.$content.children().last().append(this.buildYear(yearInfo));
       }
-      this.$content.children().first().prepend(this.buildYearNav(years[0].year - 1, "&laquo; prev"));
-      this.$content.children().last().append(this.buildYearNav(years[years.length - 1].year + 1, "next &raquo;"));
+      if (!years[0].disabled) {
+        this.$content.children().first().prepend(this.buildYearNav(years[0].year - 1, "&laquo; prev"));
+      }
+      if (!years[years.length - 1].disabled) {
+        this.$content.children().last().append(this.buildYearNav(years[years.length - 1].year + 1, "next &raquo;"));
+      }
       return this.reposition();
     };
 
@@ -528,7 +565,11 @@
       if (yearInfo.selected) {
         $year.addClass("selected");
       }
-      return $year;
+      if (!yearInfo.disabled) {
+        return $year.addClass("valid-year");
+      } else {
+        return $year.addClass("invalid-year");
+      }
     };
 
     View.prototype.buildMonth = function(year, monthInfo) {
@@ -543,7 +584,11 @@
       if (monthInfo.selected) {
         $month.addClass("selected");
       }
-      return $month;
+      if (!monthInfo.disabled) {
+        return $month.addClass("valid-month");
+      } else {
+        return $month.addClass("invalid-month");
+      }
     };
 
     View.prototype.buildDay = function(year, month, dayInfo) {
@@ -559,12 +604,11 @@
       if (dayInfo.current && this.datepicker.options.highlightToday) {
         $day.addClass("current");
       }
-      if (dayInfo.selectableMonth === true) {
-        $day.addClass("valid-day");
+      if (dayInfo.selectableMonth && !dayInfo.disabled) {
+        return $day.addClass("valid-day");
       } else {
-        $day.addClass("invalid-day");
+        return $day.addClass("invalid-day");
       }
-      return $day;
     };
 
     View.prototype.yearHeaderNav = function(year) {
