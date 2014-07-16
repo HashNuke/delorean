@@ -474,14 +474,14 @@
       })(this));
       return this.$root.on("click", ".valid-day", (function(_this) {
         return function(event) {
-          var day, month, selectedDate, year;
+          var day, inputValue, month, year;
           year = $(event.target).data("year");
           month = $(event.target).data("month");
           day = $(event.target).data("day");
           _this.datepicker.setValue(year, month, day);
-          _this.datepicker.$input.val(_this.datepicker.format());
-          selectedDate = new Date(year, month, day, 0, 0, 0);
-          _this.datepicker.$input.trigger("datepicker:selected", [selectedDate]);
+          inputValue = _this.datepicker.format();
+          _this.datepicker.$input.val(inputValue);
+          _this.datepicker.$input.trigger("datepicker:selected", [inputValue]);
           return $(window).trigger("datepicker:destroy");
         };
       })(this));
