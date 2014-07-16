@@ -10,7 +10,9 @@ class @Datepicker
   constructor: (@$input, @options={})->
     @currentDate = new Date()
     @_setDefaultOptions()
+    @_setInitialValue()
     @_parseInitialValue()
+
     if @options.startDate?
       @startDate = @parseRange(@options.startDate)
 
@@ -20,6 +22,14 @@ class @Datepicker
     @_setDefaultDateIfNecessary()
     @lang = @getLocale(@options["locale"])
     @view = new Datepicker.View(@, @options.startingView)
+
+
+  _setInitialValue: ->
+    if @$input.val().trim().length != 0
+      @options.initialValue = @$input.val().trim()
+    else
+      delete @options.initialValue
+      @value = {}
 
 
   # Borrowed and modified from bootstrap-datepicker

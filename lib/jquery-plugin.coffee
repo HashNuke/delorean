@@ -2,8 +2,6 @@ $.fn.datepicker = (options={})->
 
   @on "focusin", (event)->
     $ele = $(this)
-    options.initialValue = $ele.val() if $ele.val().trim().length != 0
-
     datepicker = $ele.data("datepicker") || new Datepicker($ele, options)
     $ele.addClass("datepicker-input").data("datepicker", datepicker)
 

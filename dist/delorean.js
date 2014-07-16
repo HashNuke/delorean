@@ -16,6 +16,7 @@
       this.options = options != null ? options : {};
       this.currentDate = new Date();
       this._setDefaultOptions();
+      this._setInitialValue();
       this._parseInitialValue();
       if (this.options.startDate != null) {
         this.startDate = this.parseRange(this.options.startDate);
@@ -27,6 +28,15 @@
       this.lang = this.getLocale(this.options["locale"]);
       this.view = new Datepicker.View(this, this.options.startingView);
     }
+
+    Datepicker.prototype._setInitialValue = function() {
+      if (this.$input.val().trim().length !== 0) {
+        return this.options.initialValue = this.$input.val().trim();
+      } else {
+        delete this.options.initialValue;
+        return this.value = {};
+      }
+    };
 
     Datepicker.prototype.parseRange = function(range) {
       var date, moveBy, moveRange, part, parts, _i, _len, _matched_value, _ref;
@@ -635,9 +645,6 @@
     this.on("focusin", function(event) {
       var $ele, datepicker;
       $ele = $(this);
-      if ($ele.val().trim().length !== 0) {
-        options.initialValue = $ele.val();
-      }
       datepicker = $ele.data("datepicker") || new Datepicker($ele, options);
       return $ele.addClass("datepicker-input").data("datepicker", datepicker);
     });
