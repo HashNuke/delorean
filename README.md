@@ -19,6 +19,21 @@ If the value of the input element is set, it'll be parsed.
 * *locale*: `en` (default). English is the only available locale right now
 
 
+### Events
+
+#### `datepicker:selected`
+
+On selecting a date, this event is triggered with the value (in the format specified) of the selected date as an argument.
+
+Example that handles the event:
+
+```
+$(window).on("datepicker:selected", function(event, value) {
+  // do what you want here
+})
+```
+
+
 ## Development
 
 The CSS file is in `dist/delorean.css`. The coffeescript source files are in `lib/`
