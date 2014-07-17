@@ -137,7 +137,15 @@ class @Datepicker
 
     currentYear  = @currentDate.getFullYear()
     selectedYear = if @value.year? then @value.year else currentYear
-    yearAmongRange ||=  (@value.year || currentYear)
+    yearAmongRange ||= if @value.year
+                         @value.year
+                       else if @startDate? && currentYear < @startDate.year
+                         @startDate.year
+                       else if @endDate? && currentYear > @endDate.year
+                         @endDate.year
+                       else
+                         currentYear
+
     startingYear = yearAmongRange - (yearAmongRange % 10)
     endingYear   = startingYear + 9
 

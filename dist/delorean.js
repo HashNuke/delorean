@@ -149,7 +149,7 @@
       }
       currentYear = this.currentDate.getFullYear();
       selectedYear = this.value.year != null ? this.value.year : currentYear;
-      yearAmongRange || (yearAmongRange = this.value.year || currentYear);
+      yearAmongRange || (yearAmongRange = this.value.year ? this.value.year : (this.startDate != null) && currentYear < this.startDate.year ? this.startDate.year : (this.endDate != null) && currentYear > this.endDate.year ? this.endDate.year : currentYear);
       startingYear = yearAmongRange - (yearAmongRange % 10);
       endingYear = startingYear + 9;
       _results = [];
