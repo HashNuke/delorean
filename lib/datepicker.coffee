@@ -1,9 +1,9 @@
 class @Datepicker
 
   regex:
-    dateRange: /^[\-+]\d+[dmwy]([\s,]+[\-+]\d+[dmwy])*$/
-    dateRangePartMatch:  /([\-+]\d+)([dmwy])/
-    dateRangeParts: /([\-+]\d+)([dmwy])/g
+    dateLimitSpec: /^[\-+]\d+[dmwy]([\s,]+[\-+]\d+[dmwy])*$/
+    dateLimitPartSpec:  /([\-+]\d+)([dmwy])/
+    dateLimitPartsSpec: /([\-+]\d+)([dmwy])/g
 
   value: {}
 
@@ -14,10 +14,10 @@ class @Datepicker
     @_parseInitialValue()
 
     if @options.startDate?
-      @startDate = @parseRange(@options.startDate)
+      @startDate = @parseLimit(@options.startDate)
 
     if @options.endDate?
-      @endDate = @parseRange(@options.endDate)
+      @endDate = @parseLimit(@options.endDate)
 
     @_setDefaultDateIfNecessary()
     @lang = @getLocale(@options["locale"])
@@ -35,13 +35,16 @@ class @Datepicker
   # Borrowed and modified from bootstrap-datepicker
   # https://github.com/eternicode/bootstrap-datepicker/blob/9e48783a799/js/bootstrap-datepicker.js#L1466
   # Thanks to @eternicode
-  parseRange: (range)->
-    return unless @regex.dateRange.test(range)
-    parts = range.match(@regex.dateRangeParts)
+  parseLimit: (limitSpecifier)->
+    limitSpecifier = "+0d" if limitSpecifier == "today"
+    limitSpecifier = "+1d" if limitSpecifier == "tomorrow"
+
+    return unless @regex.dateLimitSpec.test(limitSpecifier)
+    parts = limitSpecifier.match(@regex.dateLimitPartsSpec)
     date  = new Date()
 
     for part in parts
-      [_matched_value, moveBy, moveRange] = @regex.dateRangePartMatch.exec part
+      [_matched_value, moveBy, moveRange] = @regex.dateLimitPartSpec.exec part
       moveBy  = parseInt moveBy, 10
       switch moveRange
         when 'd'

@@ -4,9 +4,9 @@
     var numberOfDaysInMonth;
 
     Datepicker.prototype.regex = {
-      dateRange: /^[\-+]\d+[dmwy]([\s,]+[\-+]\d+[dmwy])*$/,
-      dateRangePartMatch: /([\-+]\d+)([dmwy])/,
-      dateRangeParts: /([\-+]\d+)([dmwy])/g
+      dateLimitSpec: /^[\-+]\d+[dmwy]([\s,]+[\-+]\d+[dmwy])*$/,
+      dateLimitPartSpec: /([\-+]\d+)([dmwy])/,
+      dateLimitPartsSpec: /([\-+]\d+)([dmwy])/g
     };
 
     Datepicker.prototype.value = {};
@@ -19,10 +19,10 @@
       this._setInitialValue();
       this._parseInitialValue();
       if (this.options.startDate != null) {
-        this.startDate = this.parseRange(this.options.startDate);
+        this.startDate = this.parseLimit(this.options.startDate);
       }
       if (this.options.endDate != null) {
-        this.endDate = this.parseRange(this.options.endDate);
+        this.endDate = this.parseLimit(this.options.endDate);
       }
       this._setDefaultDateIfNecessary();
       this.lang = this.getLocale(this.options["locale"]);
@@ -38,16 +38,22 @@
       }
     };
 
-    Datepicker.prototype.parseRange = function(range) {
+    Datepicker.prototype.parseLimit = function(limitSpecifier) {
       var date, moveBy, moveRange, part, parts, _i, _len, _matched_value, _ref;
-      if (!this.regex.dateRange.test(range)) {
+      if (limitSpecifier === "today") {
+        limitSpecifier = "+0d";
+      }
+      if (limitSpecifier === "tomorrow") {
+        limitSpecifier = "+1d";
+      }
+      if (!this.regex.dateLimitSpec.test(limitSpecifier)) {
         return;
       }
-      parts = range.match(this.regex.dateRangeParts);
+      parts = limitSpecifier.match(this.regex.dateLimitPartsSpec);
       date = new Date();
       for (_i = 0, _len = parts.length; _i < _len; _i++) {
         part = parts[_i];
-        _ref = this.regex.dateRangePartMatch.exec(part), _matched_value = _ref[0], moveBy = _ref[1], moveRange = _ref[2];
+        _ref = this.regex.dateLimitPartSpec.exec(part), _matched_value = _ref[0], moveBy = _ref[1], moveRange = _ref[2];
         moveBy = parseInt(moveBy, 10);
         switch (moveRange) {
           case 'd':
