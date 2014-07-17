@@ -135,8 +135,7 @@ class @Datepicker
     if @endDate? && yearAmongRange > @endDate.year
       throw new Datepicker.Error("Year is greater than range")
 
-    currentYear  = @currentDate.getFullYear()
-    selectedYear = if @value.year? then @value.year else currentYear
+    currentYear = @currentDate.getFullYear()
     yearAmongRange ||= if @value.year
                          @value.year
                        else if @startDate? && currentYear < @startDate.year
