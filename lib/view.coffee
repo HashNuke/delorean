@@ -89,15 +89,24 @@ class @Datepicker.View
       @$content.children().last().append @buildYear(yearInfo)
 
 
-    if !years[0].disabled && @datepicker.isValidYear(years[0].year - 1)
+    if @datepicker.isValidYear(years[0].year - 1)
       @$content.children()
         .first()
         .prepend @buildYearNav(years[0].year - 1, "&laquo; prev")
+    else
+      @$content.children()
+        .first()
+        .prepend @buildYearNavDisabled("&laquo; prev")
 
-    if !years[years.length - 1].disabled && @datepicker.isValidYear(years[years.length-1].year)
+    if @datepicker.isValidYear(years[years.length-1].year + 1)
       @$content.children()
         .last()
         .append @buildYearNav(years[years.length-1].year + 1, "next &raquo;")
+    else
+      @$content.children()
+        .last()
+        .append @buildYearNavDisabled("next &raquo;")
+
     @reposition()
 
 
@@ -128,6 +137,10 @@ class @Datepicker.View
     for dayInfo in days
       @$content.append @buildDay(year, month, dayInfo)
     @reposition()
+
+
+  buildYearNavDisabled: (text)->
+    $("<div/>").addClass("year-nav").addClass('invalid-year').html(text)
 
 
   buildYearNav: (navYear, text)->

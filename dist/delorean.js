@@ -146,17 +146,20 @@
     };
 
     Datepicker.prototype.isValidYear = function(year) {
-      if ((this.startDate != null) && year < this.startDate.year) {
-        throw new Datepicker.Error("Year is less than range");
+      if (((this.startDate != null) && year < this.startDate.year) || ((this.endDate != null) && year > this.endDate.year)) {
+        return false;
       }
-      if ((this.endDate != null) && year > this.endDate.year) {
-        throw new Datepicker.Error("Year is greater than range");
-      }
+      return true;
     };
 
     Datepicker.prototype.years = function(yearAmongRange) {
       var currentYear, endingYear, startingYear, year, _i, _results;
-      this.isValidYear(yearAmongRange);
+      if ((this.startDate != null) && yearAmongRange < this.startDate.year) {
+        throw new Datepicker.Error("Year is less than range");
+      }
+      if ((this.endDate != null) && yearAmongRange > this.endDate.year) {
+        throw new Datepicker.Error("Year is greater than range");
+      }
       currentYear = this.currentDate.getFullYear();
       yearAmongRange || (yearAmongRange = this.value.year ? this.value.year : (this.startDate != null) && currentYear < this.startDate.year ? this.startDate.year : (this.endDate != null) && currentYear > this.endDate.year ? this.endDate.year : currentYear);
       startingYear = yearAmongRange - (yearAmongRange % 10);
@@ -523,11 +526,15 @@
         }
         this.$content.children().last().append(this.buildYear(yearInfo));
       }
-      if (!years[0].disabled && this.datepicker.isValidYear(years[0].year - 1)) {
+      if (this.datepicker.isValidYear(years[0].year - 1)) {
         this.$content.children().first().prepend(this.buildYearNav(years[0].year - 1, "&laquo; prev"));
+      } else {
+        this.$content.children().first().prepend(this.buildYearNavDisabled("&laquo; prev"));
       }
-      if (!years[years.length - 1].disabled && this.datepicker.isValidYear(years[years.length - 1].year)) {
+      if (this.datepicker.isValidYear(years[years.length - 1].year + 1)) {
         this.$content.children().last().append(this.buildYearNav(years[years.length - 1].year + 1, "next &raquo;"));
+      } else {
+        this.$content.children().last().append(this.buildYearNavDisabled("next &raquo;"));
       }
       return this.reposition();
     };
@@ -566,6 +573,10 @@
         this.$content.append(this.buildDay(year, month, dayInfo));
       }
       return this.reposition();
+    };
+
+    View.prototype.buildYearNavDisabled = function(text) {
+      return $("<div/>").addClass("year-nav").addClass('invalid-year').html(text);
     };
 
     View.prototype.buildYearNav = function(navYear, text) {

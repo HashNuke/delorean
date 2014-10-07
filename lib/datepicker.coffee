@@ -133,16 +133,18 @@ class @Datepicker
 
 
   isValidYear: (year)->
-    if @startDate? && year < @startDate.year
-      throw new Datepicker.Error("Year is less than range")
+    if (@startDate? && year < @startDate.year) || (@endDate? && year > @endDate.year)
+      return false
 
-    if @endDate? && year > @endDate.year
-      throw new Datepicker.Error("Year is greater than range")
-
+    return true
 
 
   years: (yearAmongRange)->
-    @isValidYear(yearAmongRange)
+    if @startDate? && yearAmongRange < @startDate.year
+      throw new Datepicker.Error("Year is less than range")
+
+    if @endDate? && yearAmongRange > @endDate.year
+      throw new Datepicker.Error("Year is greater than range")
 
     currentYear = @currentDate.getFullYear()
     yearAmongRange ||= if @value.year
