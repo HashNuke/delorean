@@ -135,8 +135,7 @@ class @Datepicker
   isValidYear: (year)->
     if (@startDate? && year < @startDate.year) || (@endDate? && year > @endDate.year)
       return false
-
-    return true
+    true
 
 
   years: (yearAmongRange)->
