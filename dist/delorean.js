@@ -145,14 +145,18 @@
       return (_base4 = this.options)["highlightToday"] || (_base4["highlightToday"] = false);
     };
 
-    Datepicker.prototype.years = function(yearAmongRange) {
-      var currentYear, endingYear, startingYear, year, _i, _results;
-      if ((this.startDate != null) && yearAmongRange < this.startDate.year) {
+    Datepicker.prototype.isValidYear = function(year) {
+      if ((this.startDate != null) && year < this.startDate.year) {
         throw new Datepicker.Error("Year is less than range");
       }
-      if ((this.endDate != null) && yearAmongRange > this.endDate.year) {
+      if ((this.endDate != null) && year > this.endDate.year) {
         throw new Datepicker.Error("Year is greater than range");
       }
+    };
+
+    Datepicker.prototype.years = function(yearAmongRange) {
+      var currentYear, endingYear, startingYear, year, _i, _results;
+      this.isValidYear(yearAmongRange);
       currentYear = this.currentDate.getFullYear();
       yearAmongRange || (yearAmongRange = this.value.year ? this.value.year : (this.startDate != null) && currentYear < this.startDate.year ? this.startDate.year : (this.endDate != null) && currentYear > this.endDate.year ? this.endDate.year : currentYear);
       startingYear = yearAmongRange - (yearAmongRange % 10);
@@ -519,10 +523,10 @@
         }
         this.$content.children().last().append(this.buildYear(yearInfo));
       }
-      if (!years[0].disabled) {
+      if (!years[0].disabled && this.datepicker.isValidYear(years[0].year - 1)) {
         this.$content.children().first().prepend(this.buildYearNav(years[0].year - 1, "&laquo; prev"));
       }
-      if (!years[years.length - 1].disabled) {
+      if (!years[years.length - 1].disabled && this.datepicker.isValidYear(years[years.length - 1].year)) {
         this.$content.children().last().append(this.buildYearNav(years[years.length - 1].year + 1, "next &raquo;"));
       }
       return this.reposition();

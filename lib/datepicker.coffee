@@ -131,12 +131,18 @@ class @Datepicker
     @options["highlightToday"] ||= false
 
 
-  years: (yearAmongRange)->
-    if @startDate? && yearAmongRange < @startDate.year
+
+  isValidYear: (year)->
+    if @startDate? && year < @startDate.year
       throw new Datepicker.Error("Year is less than range")
 
-    if @endDate? && yearAmongRange > @endDate.year
+    if @endDate? && year > @endDate.year
       throw new Datepicker.Error("Year is greater than range")
+
+
+
+  years: (yearAmongRange)->
+    @isValidYear(yearAmongRange)
 
     currentYear = @currentDate.getFullYear()
     yearAmongRange ||= if @value.year

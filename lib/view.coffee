@@ -89,12 +89,12 @@ class @Datepicker.View
       @$content.children().last().append @buildYear(yearInfo)
 
 
-    unless years[0].disabled
+    if !years[0].disabled && @datepicker.isValidYear(years[0].year - 1)
       @$content.children()
         .first()
         .prepend @buildYearNav(years[0].year - 1, "&laquo; prev")
 
-    unless years[years.length - 1].disabled
+    if !years[years.length - 1].disabled && @datepicker.isValidYear(years[years.length-1].year)
       @$content.children()
         .last()
         .append @buildYearNav(years[years.length-1].year + 1, "next &raquo;")
