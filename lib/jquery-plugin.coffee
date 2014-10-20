@@ -1,17 +1,22 @@
 $.fn.datepicker = (options={})->
 
+
+  removeDatePicker = ->
+    $datepicker = $(".datepicker-input")
+    return if $datepicker.length == 0
+    datepicker = $datepicker.data("datepicker")
+    datepicker.destroy()
+    $datepicker.removeData("datepicker").removeClass("datepicker-input")
+
+
   @on "focusin", (event)->
     $ele = $(this)
     datepicker = $ele.data("datepicker") || new Datepicker($ele, options)
     $ele.addClass("datepicker-input").data("datepicker", datepicker)
 
 
-  $(window).on "datepicker:destroy", ->
-    $datepicker = $(".datepicker-input")
-    return if $datepicker.length == 0
-    datepicker = $datepicker.data("datepicker")
-    datepicker.destroy()
-    $datepicker.removeData("datepicker").removeClass("datepicker-input")
+  @on "focusout", removeDatePicker
+  $(window).on "datepicker:destroy", removeDatePicker
 
 
   $(window).on "click", (event)->

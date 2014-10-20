@@ -659,16 +659,11 @@
   })();
 
   $.fn.datepicker = function(options) {
+    var removeDatePicker;
     if (options == null) {
       options = {};
     }
-    this.on("focusin", function(event) {
-      var $ele, datepicker;
-      $ele = $(this);
-      datepicker = $ele.data("datepicker") || new Datepicker($ele, options);
-      return $ele.addClass("datepicker-input").data("datepicker", datepicker);
-    });
-    $(window).on("datepicker:destroy", function() {
+    removeDatePicker = function() {
       var $datepicker, datepicker;
       $datepicker = $(".datepicker-input");
       if ($datepicker.length === 0) {
@@ -677,7 +672,15 @@
       datepicker = $datepicker.data("datepicker");
       datepicker.destroy();
       return $datepicker.removeData("datepicker").removeClass("datepicker-input");
+    };
+    this.on("focusin", function(event) {
+      var $ele, datepicker;
+      $ele = $(this);
+      datepicker = $ele.data("datepicker") || new Datepicker($ele, options);
+      return $ele.addClass("datepicker-input").data("datepicker", datepicker);
     });
+    this.on("focusout", removeDatePicker);
+    $(window).on("datepicker:destroy", removeDatePicker);
     return $(window).on("click", function(event) {
       var $target, isChildOfDatepickerElement, isDatepickerElement, isDatepickerInput, isDatepickerOpen, isElementInDom;
       $target = $(event.target);
