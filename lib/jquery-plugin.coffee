@@ -1,13 +1,51 @@
 $.fn.datepicker = (options={})->
 
 
-  @on "focusin", (event)->
+  @on "focusin", (event)=>
     $ele = $(this)
+
+    # destroy any other datepicker
+    currentDatepickerId = $(window).data('current-datepicker-id')
+    if currentDatepickerId?
+      $(window).trigger "datepicker:destroy"
+
+    uniqueId = "delorean-#{new Date().getUTCMilliseconds()}"
     datepicker = $ele.data("datepicker") || new Datepicker($ele, options)
-    $ele.addClass("datepicker-input").data("datepicker", datepicker)
+    $ele.addClass("datepicker-input")
+        .data("datepicker", datepicker)
+        .addClass("#{uniqueId}")
+    $(window).data('current-datepicker-id', uniqueId)
 
 
-  globalDatepickerClickDestroy = (event)->
+  # destroy datepicker when enter key is pressed in the input box
+  @on "keypress", (event)->
+    keyCode = event.keyCode || event.which
+    if keyCode == 13
+      $(window).trigger "datepicker:destroy"
+
+
+  destroyDatepickerOnTabPress = (event)->
+    keyCode = event.keyCode || event.which
+    isDatepickerInput = $(event.target).hasClass("datepicker-input")
+
+    if keyCode == 9 && !isDatepickerInput
+      $(window).trigger "datepicker:destroy"
+
+
+
+  $(window).on "datepicker:destroy", (event)=>
+    currentDatepickerId = $(window).data('current-datepicker-id')
+    $datepicker = $(".#{currentDatepickerId}")
+    if $datepicker.length > 0
+      datepicker = $datepicker.data("datepicker")
+      datepicker.destroy()
+      $datepicker.removeData("datepicker")
+                 .removeClass("datepicker-input")
+                 .removeClass("#{currentDatepickerId}")
+      $(window).off "click", destroyDatepickerOnTabPress
+
+
+  $(window).on "click", (event)->
     $target = $(event.target)
 
     isDatepickerOpen = $(".datepicker-input").length != 0
@@ -20,40 +58,4 @@ $.fn.datepicker = (options={})->
       $(window).trigger "datepicker:destroy"
 
 
-  globalDatepickerKeyDestroy = (event)->
-    $target = $(event.target)
-    keyCode = event.keyCode || event.which
-
-    isTabPressed   = keyCode == 9
-    isEnterPressed = keyCode == 13
-    isShiftPressed = event.shiftKey
-    isDatepickerInput = $target.hasClass("datepicker-input")
-
-    # console.log isDatepickerInput, isEnterPressed, isTabPressed
-    if isDatepickerInput && isEnterPressed
-      $(window).trigger "datepicker:destroy", 0
-
-
-    console.log isTabPressed, isDatepickerInput, $(".datepicker-input").length > 1
-    if isTabPressed && isDatepickerInput && $(".datepicker-input").length > 1
-      index = if isShiftPressed then 1 else 0
-      console.log "send:destroy"
-      $(window).trigger "datepicker:destroy", index
-      return
-
-
-  $(window).on "datepicker:destroy", (event, index)->
-    index = 0 if !index?
-
-    debugger
-    $datepicker = $(".datepicker-input").eq(index)
-    if $datepicker? && $datepicker.length != 0
-      datepicker = $datepicker.data("datepicker")
-      datepicker.destroy()
-      $datepicker.removeData("datepicker").removeClass("datepicker-input")
-    $(window).off("click", globalDatepickerClickDestroy)
-    $(window).off("keyup", globalDatepickerKeyDestroy)
-
-
-  $(window).on "click", globalDatepickerClickDestroy
-  $(window).on "keyup", globalDatepickerKeyDestroy
+  $(window).on "keyup", destroyDatepickerOnTabPress

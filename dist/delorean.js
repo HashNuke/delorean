@@ -659,29 +659,53 @@
   })();
 
   $.fn.datepicker = function(options) {
-    var removeDatePicker;
+    var destroyDatepickerOnTabPress;
     if (options == null) {
       options = {};
     }
-    removeDatePicker = function() {
-      var $datepicker, datepicker;
-      $datepicker = $(".datepicker-input");
-      if ($datepicker.length === 0) {
-        return;
+    this.on("focusin", (function(_this) {
+      return function(event) {
+        var $ele, currentDatepickerId, datepicker, uniqueId;
+        $ele = $(_this);
+        currentDatepickerId = $(window).data('current-datepicker-id');
+        if (currentDatepickerId != null) {
+          $(window).trigger("datepicker:destroy");
+        }
+        uniqueId = "delorean-" + (new Date().getUTCMilliseconds());
+        datepicker = $ele.data("datepicker") || new Datepicker($ele, options);
+        $ele.addClass("datepicker-input").data("datepicker", datepicker).addClass("" + uniqueId);
+        return $(window).data('current-datepicker-id', uniqueId);
+      };
+    })(this));
+    this.on("keypress", function(event) {
+      var keyCode;
+      keyCode = event.keyCode || event.which;
+      if (keyCode === 13) {
+        return $(window).trigger("datepicker:destroy");
       }
-      datepicker = $datepicker.data("datepicker");
-      datepicker.destroy();
-      return $datepicker.removeData("datepicker").removeClass("datepicker-input");
-    };
-    this.on("focusin", function(event) {
-      var $ele, datepicker;
-      $ele = $(this);
-      datepicker = $ele.data("datepicker") || new Datepicker($ele, options);
-      return $ele.addClass("datepicker-input").data("datepicker", datepicker);
     });
-    this.on("focusout", removeDatePicker);
-    $(window).on("datepicker:destroy", removeDatePicker);
-    return $(window).on("click", function(event) {
+    destroyDatepickerOnTabPress = function(event) {
+      var isDatepickerInput, keyCode;
+      keyCode = event.keyCode || event.which;
+      isDatepickerInput = $(event.target).hasClass("datepicker-input");
+      if (keyCode === 9 && !isDatepickerInput) {
+        return $(window).trigger("datepicker:destroy");
+      }
+    };
+    $(window).on("datepicker:destroy", (function(_this) {
+      return function(event) {
+        var $datepicker, currentDatepickerId, datepicker;
+        currentDatepickerId = $(window).data('current-datepicker-id');
+        $datepicker = $("." + currentDatepickerId);
+        if ($datepicker.length > 0) {
+          datepicker = $datepicker.data("datepicker");
+          datepicker.destroy();
+          $datepicker.removeData("datepicker").removeClass("datepicker-input").removeClass("" + currentDatepickerId);
+          return $(window).off("click", destroyDatepickerOnTabPress);
+        }
+      };
+    })(this));
+    $(window).on("click", function(event) {
       var $target, isChildOfDatepickerElement, isDatepickerElement, isDatepickerInput, isDatepickerOpen, isElementInDom;
       $target = $(event.target);
       isDatepickerOpen = $(".datepicker-input").length !== 0;
@@ -693,6 +717,7 @@
         return $(window).trigger("datepicker:destroy");
       }
     });
+    return $(window).on("keyup", destroyDatepickerOnTabPress);
   };
 
 }).call(this);
