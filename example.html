@@ -23,14 +23,19 @@
   <body>
 
     <div align="center">
-      <input type="text" class="example1"/>
-      <input type="text" value="tabbing to this should close datepicker" width="100%"/>
+      <form>
+        <input type="text" class="example1"/>
+        <input type="text" class="example2"/>
+        <input type="text" class="example3"/>
+        <input type="text" value="tabbing to this should close datepicker" width="100%"/>
+      </form>
     </div>
 
     <script type="text/javascript">
       $(document).ready(function(){
         $(".example1").datepicker({startDate: "-1y", endDate: "+2y"})
-        // $("input").datepicker({startingView: "months"})
+        $(".example2").datepicker({startingView: "months"})
+        $(".example3").datepicker({startingView: "months"})
         // $("input").datepicker({startingView: "days"})
       })
     </script>
